@@ -60,7 +60,8 @@ int connectSocket(char *host, int port) {
     address.sin_family = AF_INET;
     address.sin_port = htons(port);
 
-    inet_pton(AF_INET, gethostbyname(host), &address.sin_addr);
+    struct hostent *server = gethostbyname(host);
+    memcpy(&address.sin_addr.s_addr, server->h_addr, server->h_length);
 
 
     connect(client_fd, (struct sockaddr *)&address, sizeof(address));
