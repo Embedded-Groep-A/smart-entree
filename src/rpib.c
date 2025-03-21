@@ -34,12 +34,14 @@ int main() {
         if (FD_ISSET(server_fd, &read_fds)) {
             int client_fd = acceptClient(server_fd);
             if (client_fd >= 0) {
-                for (int i = 0; i < MAX_CLIENTS; i++) {
-                    if (clients[i].socket == 0) {
-                        clients[i].socket = client_fd;
-                        printf("New client connected, assigned ID: %d\n", i);
-                        break;
-                    }
+                int client_id = assignClientID();
+                if (client_id >= 0) {
+                    clients[client_id].socket = client_fd;
+                    clients[client_id].id = client_id;
+                    printf("New client connected, assigned ID: %d\n", client_id);
+                } else {
+                    printf("Max clients reached. Rejecting new client.\n");
+                    close(client_fd);
                 }
             }
         }
@@ -48,8 +50,10 @@ int main() {
             if (clients[i].socket > 0 && FD_ISSET(clients[i].socket, &read_fds)) {
                 enum DataType type;
                 int value;
-                if (listenForData(clients[i].socket, &type, &value)) {
-                    printf("Received data from client %d: Type: %d, Value: %d\n", i, type, value);
+                int bytes_received = listenForData(clients[i].socket, &type, &value);
+
+                if (bytes_received > 0) {
+                    printf("Received data from client %d: Type: %d, Value: %d\n", clients[i].id, type, value);
                 }
             }
         }

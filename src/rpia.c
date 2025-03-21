@@ -11,11 +11,12 @@
 
 int main() {
     int client_fd = connectSocket(HOST, PORT);
-    while (1) {
-        sendToServer(client_fd, BUTTON, 1);
-        sleep(1);
-    }
-    //disconnectSocket(client_fd);
+    sendToServer(client_fd, BUTTON, 1);
+    sleep(1);
+    sendToServer(client_fd, BUTTON, 0);
+    sleep(5);
+
+    disconnectSocket(client_fd);
     return 0;
 }
 

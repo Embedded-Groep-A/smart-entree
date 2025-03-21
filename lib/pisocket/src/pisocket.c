@@ -21,6 +21,15 @@ void initClientArray() {
     }
 }
 
+int assignClientId() {
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+        if (clients[i].socket == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 int hostSocket(int port) {
     int server_fd;
     int opt = 1;
@@ -123,6 +132,7 @@ void sendToClient(int clientId, enum DataType type, int value) {
 int listenForData(int socket, enum DataType *type, int *value) {
     char buffer[BUFFER_SIZE];
     int n = read(socket, buffer, 255);
+    printf("read statsus %d\n", n);
     if (n <= 0) {
         return 0;
     }

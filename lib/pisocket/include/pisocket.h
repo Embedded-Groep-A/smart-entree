@@ -32,6 +32,13 @@ enum DataType {
 void initClientArray();
 
 /**
+ * @brief Wijs een client ID toe.
+ * @return De eerstvolgende vrije client ID of -1 als vol.
+ */
+int assignClientId();
+
+
+/**
  * @brief Host een server socket op de opgegeven poort.
  *
  * @param port Poortnummer waarop de server socket wordt gehost.
