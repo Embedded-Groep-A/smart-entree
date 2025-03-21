@@ -30,18 +30,6 @@ int main() {
         select(max_fd + 1, &read_fds, NULL, NULL, NULL);
         if (FD_ISSET(server_fd, &read_fds)) {
             int client_fd = acceptClient(server_fd);
-
-            if (client_fd >= 0) {
-                int client_id = assignClientId();
-                if (client_id == -1) {
-                    printf("Max clients reached. Rejecting new client.\n");
-                    close(client_fd);
-                } else {
-                    clients[client_id].socket = client_fd;
-                    clients[client_id].id = client_id;
-                    printf("New client connected, assigned ID: %d\n", client_id);
-                }
-            }
         }
 
         for (int i = 0; i < MAX_CLIENTS; i++) {
