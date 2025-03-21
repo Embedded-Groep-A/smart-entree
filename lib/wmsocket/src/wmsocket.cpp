@@ -2,7 +2,7 @@
 #include <ESP8266WiFi.h>
 #include "wmsocket.h"
 
-void setupWiFiconnection(char *ssid, char *password) {
+void setupWiFiconnection(const char* ssid, const char* password) {
     WiFi.begin(ssid, password);
     Serial.print("Connecting to WiFi.");
     while(WiFi.status() != WL_CONNECTED) {
@@ -13,7 +13,7 @@ void setupWiFiconnection(char *ssid, char *password) {
     Serial.println(WiFi.localIP());
 }
 
-WiFiClient connectSocket(char *host, int port) {
+WiFiClient connectSocket(const char* host, int port) {
     WiFiClient client;
     IPAddress serverip;
     WiFi.hostByName(host, serverip);
@@ -23,7 +23,7 @@ WiFiClient connectSocket(char *host, int port) {
       return client;
 }
 
-void sendData(WiFiClient &client, DataType type, int value) {
+void sendToServer(WiFiClient &client, DataType type, int value) {
     char buffer[32];
     sprintf(buffer, "%d %d", type, value);
     client.print(buffer);

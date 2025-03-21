@@ -48,5 +48,15 @@ int main() {
                 }
             }
         }
+
+        char input[100];
+        if (fgets(input, sizeof(input), stdin) != NULL) {
+            int r, g, b;
+            sscanf(input, "%d %d %d", &r, &g, &b);
+            char buffer[256];
+            sprintf(buffer, "%d %d %d", r, g, b);
+            sendToClient(0, RGBLED, buffer);
+        }
+        
     }
 }
