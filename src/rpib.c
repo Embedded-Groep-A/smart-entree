@@ -9,7 +9,12 @@
 
 int main() {
     int server_fd = hostSocket(PORT);
-    initClientArray();
+    //initClientArray();
+
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+        clients[i].socket = 0;
+        clients[i].id = -1;
+    }
 
     fd_set read_fds;
     int max_fd = server_fd;
