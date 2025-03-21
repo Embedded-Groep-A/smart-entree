@@ -13,7 +13,7 @@ int main() {
     int client_fd = connectSocket(HOST, PORT);
     while (1) {
         sendToServer(client_fd, BUTTON, 1);
-        delay(1000);
+        sleep(1);
     }
     //disconnectSocket(client_fd);
     return 0;
