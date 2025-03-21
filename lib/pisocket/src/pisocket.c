@@ -16,17 +16,32 @@ int hostSocket(int port) {
     int opt = 1;
     int addrlen = sizeof(address);
 
-    server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+        perror("socket failed");
+        exit(EXIT_FAILURE);
+    }
 
-    setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt));
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
+        perror("setsockopt failed");
+        close(server_fd);
+        exit(EXIT_FAILURE);
+    }
 
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(port);
 
-    bind(server_fd, (struct sockaddr *)&address, sizeof(address));
+    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
+        perror("bind failed");
+        close(server_fd);
+        exit(EXIT_FAILURE);
+    }
 
-    listen(server_fd, 10);
+    if (listen(server_fd, 10) < 0) {
+        perror("listen failed");
+        close(server_fd);
+        exit(EXIT_FAILURE);
+    }
 
     printf("Server listening on port %d\n", port);
 
@@ -36,8 +51,10 @@ int hostSocket(int port) {
 int acceptClient(int server) {
     int addrlen = sizeof(address);
     int new_socket = accept(server, (struct sockaddr *)&address, (socklen_t*)&addrlen);
-    // int flags = fcntl(new_socket, F_GETFL, 0);
-    // fcntl(new_socket, F_SETFL, flags | O_NONBLOCK);
+    if (new_socket < 0) {
+        perror("accept failed");
+        return -1;
+    }
 
     printf("Client connected\n");
 
@@ -45,30 +62,46 @@ int acceptClient(int server) {
 }
 
 void closeClient(int client) {
-    close(client);
-    printf("Client disconnected\n");
+    if (close(client) < 0) {
+        perror("close client failed");
+    } else {
+        printf("Client disconnected\n");
+    }
 }
 
 void closeSocket(int server) {
-    close(server);
-    printf("Server closed\n");
+    if (close(server) < 0) {
+        perror("close server failed");
+    } else {
+        printf("Server closed\n");
+    }
 }
 
 int connectSocket(char *host, int port) {
     int client_fd;
     struct sockaddr_in address;
 
-    client_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if ((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+        perror("socket failed");
+        exit(EXIT_FAILURE);
+    }
 
     address.sin_family = AF_INET;
     address.sin_port = htons(port);
 
     struct hostent *server = gethostbyname(host);
+    if (server == NULL) {
+        fprintf(stderr, "gethostbyname failed\n");
+        close(client_fd);
+        exit(EXIT_FAILURE);
+    }
     memcpy(&address.sin_addr.s_addr, server->h_addr, server->h_length);
 
-
-    connect(client_fd, (struct sockaddr *)&address, sizeof(address));
-
+    if (connect(client_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
+        perror("connect failed");
+        close(client_fd);
+        exit(EXIT_FAILURE);
+    }
 
     char ip[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &(address.sin_addr), ip, INET_ADDRSTRLEN);
@@ -78,26 +111,37 @@ int connectSocket(char *host, int port) {
 }
 
 void disconnectSocket(int server) {
-    close(server);
-    printf("Disconnected from server\n");
+    if (close(server) < 0) {
+        perror("disconnect failed");
+    } else {
+        printf("Disconnected from server\n");
+    }
 }
 
 void sendData(int socket, enum DataType type, int value) {
     char buffer[256];
     sprintf(buffer, "%d %d", type, value);
-    write(socket, buffer, strlen(buffer));
-    printf("Data sent: %s\n", buffer);
+    if (write(socket, buffer, strlen(buffer)) < 0) {
+        perror("send data failed");
+    } else {
+        printf("Data sent: %s\n", buffer);
+    }
 }
 
 int listenForData(int socket, enum DataType *type, int *value) {
     char buffer[256];
     int n = read(socket, buffer, 255);
-    if (n <= 0) {
+    if (n < 0) {
+        perror("read failed");
         return 0;
-    }
-    if (n > 0) {
+    } else if (n == 0) {
+        return 0;
+    } else {
         buffer[n] = '\0';
-        sscanf(buffer, "%d %d", (int *)type, value);
+        if (sscanf(buffer, "%d %d", (int *)type, value) != 2) {
+            fprintf(stderr, "sscanf failed\n");
+            return 0;
+        }
         return 1;
     }
 }
