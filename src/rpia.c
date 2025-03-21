@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include "pisocket.h"
 
-#define PORT 8080
+#define PORT 8069
 #define HOST "raspberrypi.local"
 
 
