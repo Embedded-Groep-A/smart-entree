@@ -11,6 +11,11 @@
 
 struct sockaddr_in address;
 
+enum DataType {
+    BUTTON,
+    SENSOR,
+};
+
 int hostSocket(int port) {
     int server_fd;
     int opt = 1;
@@ -97,7 +102,10 @@ int listenForData(int socket, enum DataType *type, int *value) {
     }
     if (n > 0) {
         buffer[n] = '\0';
-        sscanf(buffer, "%d %d", type, value);
+        int typeInt;
+        sscanf(buffer, "%d %d", &typeInt, value);
+        *type = (enum DataType)typeInt;
         return 1;
     }
+    return 0;
 }
