@@ -132,7 +132,6 @@ void sendToClient(int clientId, enum DataType type, int value) {
 int listenForData(int socket, enum DataType *type, int *value) {
     char buffer[BUFFER_SIZE];
     int n = read(socket, buffer, 255);
-    printf("read statsus %d\n", n);
     if (n <= 0) {
         return 0;
     }
