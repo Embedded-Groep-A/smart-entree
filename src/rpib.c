@@ -29,38 +29,41 @@ int main() {
         }
 
         int activity = select(max_fd + 1, &read_fds, NULL, NULL, NULL);
+
+
         if (FD_ISSET(server_fd, &read_fds)) {
             int client_fd = acceptClient(server_fd);
             if (client_fd >= 0) {
-            int client_id = assignClientId();
-            if (client_id >= 0) {
-                clients[client_id].socket = client_fd;
-                clients[client_id].id = client_id;
-                printf("New client connected, assigned ID: %d\n", client_id);
-            } else {
-                printf("Max clients reached. Rejecting new client.\n");
-                close(client_fd);
-            }
+                int client_id = assignClientId();
+                if (client_id >= 0) {
+                    clients[client_id].socket = client_fd;
+                    clients[client_id].id = client_id;
+                    printf("New client connected, assigned ID: %d\n", client_id);
+                } else {
+                    printf("Max clients reached. Rejecting new client.\n");
+                    close(client_fd);
+                }
             }
         }
 
         for (int i = 0; i < MAX_CLIENTS; i++) {
             if (clients[i].socket > 0 && FD_ISSET(clients[i].socket, &read_fds)) {
-            enum DataType type;
-            int value;
-            int readStatus = listenForData(clients[i].socket, &type, &value);
+                enum DataType type;
+                int value;
+                int readStatus = listenForData(clients[i].socket, &type, &value);
 
-            if (readStatus > 0) {
-                printf("Received data from client %d: Type: %d, Value: %d\n", clients[i].id, type, value);
-            } else if (readStatus == 0) {
-                printf("Client %d disconnected\n", clients[i].id);
-                closeClient(clients[i].socket);
-                clients[i].socket = 0;
-                clients[i].id = -1;
-            }
+                if (readStatus > 0) {
+                    printf("Received data from client %d: Type: %d, Value: %d\n", clients[i].id, type, value);
+                } else if (readStatus == 0) {
+                    printf("Client %d disconnected\n", clients[i].id);
+                    closeClient(clients[i].socket);
+                    clients[i].socket = 0;
+                    clients[i].id = -1;
+                }
             }
         }
     }
 }
+
 
 
