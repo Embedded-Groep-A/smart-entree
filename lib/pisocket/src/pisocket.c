@@ -4,8 +4,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
-#include "../lib/pisocket/include/pisocket.h"
-#include <pisocket.h>
+#include "pisocket.h"
 
 int hostSocket(int port) {
     int server_fd;
