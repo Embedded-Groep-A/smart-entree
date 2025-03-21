@@ -2,10 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
-#include <netdb.h>
 #include <fcntl.h>
 #include "pisocket.h"
 
@@ -29,7 +26,14 @@ int hostSocket(int port) {
 
     printf("Server listening on port %d\n", port);
 
-    return server_fd;
+    //return server_fd;
+    int new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
+    // int flags = fcntl(new_socket, F_GETFL, 0);
+    // fcntl(new_socket, F_SETFL, flags | O_NONBLOCK);
+
+    printf("Client connected\n");
+
+    return new_socket;
 }
 
 int acceptClient(int server) {
@@ -57,30 +61,17 @@ void closeSocket(int server) {
 int connectSocket(char *host, int port) {
     int client_fd;
     struct sockaddr_in address;
-    struct hostent *server;
 
     client_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (client_fd < 0) {
-        perror("Socket creation failed");
-        return -1;
-    }
 
-    server = gethostbyname(host);
-    if (server == NULL) {
-        fprintf(stderr, "No such host: %s\n", host);
-        return -1;
-    }
-
-    memset(&address, 0, sizeof(address));
     address.sin_family = AF_INET;
     address.sin_port = htons(port);
-    memcpy(&address.sin_addr.s_addr, server->h_addr, server->h_length);
 
-    if (connect(client_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
-        perror("Connection failed");
-        close(client_fd);
-        return -1;
-    }
+    inet_pton(AF_INET, gethostbyname(host), &address.sin_addr);
+
+
+    connect(client_fd, (struct sockaddr *)&address, sizeof(address));
+
 
     char ip[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &(address.sin_addr), ip, INET_ADDRSTRLEN);
