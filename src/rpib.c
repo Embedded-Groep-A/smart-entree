@@ -26,12 +26,15 @@ int main() {
                 }
             }
         }
+        int client_handled = 0;
 
         int activity = select(max_fd + 1, &read_fds, NULL, NULL, NULL);
-
-        if (FD_ISSET(server_fd, &read_fds)) {
+        static int client_handled = 0;
+        if (!client_handled && FD_ISSET(server_fd, &read_fds)) {
             int client_fd = acceptClient(server_fd);
 
+            if (client_fd >= 0) {
+                client_handled = 1;
             if (client_fd >= 0) {
                 int client_id = assignClientId();
                 if (client_id == -1) {
