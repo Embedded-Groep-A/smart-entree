@@ -50,10 +50,6 @@ int main() {
                 int value;
                 if (listenForData(clients[i].socket, &type, &value)) {
                     printf("Received data from client %d: Type: %d, Value: %d\n", i, type, value);
-                } else {
-                    printf("Client %d disconnected\n", i);
-                    closeClient(clients[i].socket);
-                    clients[i].socket = 0;
                 }
             }
         }
