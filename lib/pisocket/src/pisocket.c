@@ -99,7 +99,7 @@ int listenForData(int socket, enum DataType *type, int *value) {
         buffer[n] = '\0';
         int temp;
         sscanf(buffer, "%d %d", &temp, value);
-        *type = (enum DataType)temp;
+        type = (enum DataType)temp;
         return 1;
     }
 }
