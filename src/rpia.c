@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "../lib/pisocket/include/pisocket.h"
+#include "pisocket.h"
 
 #define PORT 8080
 #define HOST "raspberrypi.local"
