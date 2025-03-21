@@ -7,6 +7,8 @@
 #define PORT 8069
 #define MAX_CLIENTS 4
 
+static int client_handled = 0;
+
 int main() {
     int server_fd = hostSocket(PORT);
     initClientArray();
@@ -26,25 +28,25 @@ int main() {
                 }
             }
         }
-        int client_handled = 0;
 
         int activity = select(max_fd + 1, &read_fds, NULL, NULL, NULL);
-        static int client_handled = 0;
+        client_handled = 0;
         if (!client_handled && FD_ISSET(server_fd, &read_fds)) {
             int client_fd = acceptClient(server_fd);
 
             if (client_fd >= 0) {
                 client_handled = 1;
-            if (client_fd >= 0) {
-                int client_id = assignClientId();
-                if (client_id == -1) {
-                    printf("Max clients reached. Rejecting new client.\n");
-                    close(client_fd);
-                } else {
-                    clients[client_id].socket = client_fd;
-                    clients[client_id].id = client_id;
-                    printf("New client connected, assigned ID: %d\n", client_id);
+                if (client_fd >= 0) {
+                    int client_id = assignClientId();
+                    if (client_id == -1) {
+                        printf("Max clients reached. Rejecting new client.\n");
+                        close(client_fd);
+                    } else {
+                        clients[client_id].socket = client_fd;
+                        clients[client_id].id = client_id;
+                        printf("New client connected, assigned ID: %d\n", client_id);
 
+                    }
                 }
             }
         }
