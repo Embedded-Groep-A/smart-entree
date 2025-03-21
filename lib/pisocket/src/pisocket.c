@@ -11,10 +11,6 @@
 
 struct sockaddr_in address;
 
-enum DataType {
-    BUTTON,
-    SENSOR,
-};
 
 int hostSocket(int port) {
     int server_fd;
