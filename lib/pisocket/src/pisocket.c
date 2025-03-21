@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include "pisocket.h"
@@ -30,6 +32,8 @@ int hostSocket(int port) {
 }
 
 int acceptClient(int server) {
+    struct sockaddr_in address;
+    int addrlen = sizeof(address);
     int new_socket = accept(server, (struct sockaddr *)&address, (socklen_t*)&addrlen);
     int flags = fcntl(new_socket, F_GETFL, 0);
     fcntl(new_socket, F_SETFL, flags | O_NONBLOCK);
