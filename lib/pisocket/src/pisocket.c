@@ -6,9 +6,10 @@
 #include <fcntl.h>
 #include "pisocket.h"
 
+struct sockaddr_in address;
+
 int hostSocket(int port) {
     int server_fd;
-    struct sockaddr_in address;
     int opt = 1;
     int addrlen = sizeof(address);
 
@@ -26,18 +27,10 @@ int hostSocket(int port) {
 
     printf("Server listening on port %d\n", port);
 
-    //return server_fd;
-    int new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
-    // int flags = fcntl(new_socket, F_GETFL, 0);
-    // fcntl(new_socket, F_SETFL, flags | O_NONBLOCK);
-
-    printf("Client connected\n");
-
-    return new_socket;
+    return server_fd;
 }
 
 int acceptClient(int server) {
-    struct sockaddr_in address;
     int addrlen = sizeof(address);
     int new_socket = accept(server, (struct sockaddr *)&address, (socklen_t*)&addrlen);
     // int flags = fcntl(new_socket, F_GETFL, 0);

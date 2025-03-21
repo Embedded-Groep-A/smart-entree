@@ -15,7 +15,7 @@
 int main() {
     int server_fd = hostSocket(PORT);
     while (1) {
-        //int client_fd = acceptClient(server_fd);
+        int client_fd = acceptClient(server_fd);
         enum DataType type;
         int value;
         if (listenForData(client_fd, &type, &value) > 0) {
