@@ -89,13 +89,13 @@ void disconnectSocket(int server) {
 void sendData(int socket, enum DataType type, int value) {
     char buffer[256];
     sprintf(buffer, "%d %d", type, value);
-    send(socket, buffer, strlen(buffer), 0);
+    write(socket, buffer, strlen(buffer));
     printf("Data sent: %s\n", buffer);
 }
 
 int listenForData(int socket, enum DataType *type, int *value) {
     char buffer[256];
-    int n = recv(socket, buffer, 255, 0);
+    int n = read(socket, buffer, 255);
     if (n <= 0) {
         return 0;
     }
