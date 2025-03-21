@@ -1,4 +1,3 @@
-//RPI MET SOCKET NAAR WEMOS D1 MINI {BramsVoorhoofd}
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,9 +29,9 @@ int main() {
 
         int activity = select(max_fd + 1, &read_fds, NULL, NULL, NULL);
 
-
         if (FD_ISSET(server_fd, &read_fds)) {
             int client_fd = acceptClient(server_fd);
+
             if (client_fd >= 0) {
                 int client_id = assignClientId();
                 if (client_id >= 0) {
@@ -64,6 +63,3 @@ int main() {
         }
     }
 }
-
-
-
