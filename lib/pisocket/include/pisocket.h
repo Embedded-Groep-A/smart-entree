@@ -13,6 +13,9 @@ typedef struct {
     int id;
 } Client; /**<Structuur voor het bijhouden van client sockets.*/
 
+extern Client clients[MAX_CLIENTS];
+
+
 /**
  * @enum DataType
  * @brief Enumeratie van de verschillende types van data die kunnen worden verzonden.

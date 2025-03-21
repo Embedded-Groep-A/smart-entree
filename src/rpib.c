@@ -8,12 +8,6 @@
 #define PORT 8069
 #define MAX_CLIENTS 4
 
-typedef struct {
-    int socket;
-} Client;
-
-Client clients[MAX_CLIENTS];
-
 int main() {
     int server_fd = hostSocket(PORT);
     initClientArray();
@@ -35,15 +29,18 @@ int main() {
         }
 
         int activity = select(max_fd + 1, &read_fds, NULL, NULL, NULL);
-        if (activity < 0) {
-            perror("select error");
-            continue;
-        }
+
 
         if (FD_ISSET(server_fd, &read_fds)) {
             int client_fd = acceptClient(server_fd);
             if (client_fd >= 0) {
-                printf("New client connected\n");
+                for (int i = 0; i < MAX_CLIENTS; i++) {
+                    if (clients[i].socket == 0) {
+                        clients[i].socket = client_fd;
+                        printf("New client connected, assigned ID: %d\n", i);
+                        break;
+                    }
+                }
             }
         }
 
