@@ -71,6 +71,7 @@ int connectSocket(char *host, int port) {
         return -1;
     }
 
+    memset(&address, 0, sizeof(address));
     address.sin_family = AF_INET;
     address.sin_port = htons(port);
     memcpy(&address.sin_addr.s_addr, server->h_addr, server->h_length);
