@@ -55,10 +55,10 @@ int main() {
                 if (bytes_received > 0) {
                     printf("Received data from client %d: Type: %d, Value: %d\n", clients[i].id, type, value);
                 } else if (bytes_received == 0) {
-                    printf("Client %d disconnected\n", clients[i].id);
-                    closeClient(clients[i].socket);
-                    clients[i].socket = 0;
-                    clients[i].id = -1;
+                    // printf("Client %d disconnected\n", clients[i].id);
+                    // closeClient(clients[i].socket);
+                    // clients[i].socket = 0;
+                    // clients[i].id = -1;
                 }
             }
         }
