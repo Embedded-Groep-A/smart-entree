@@ -6,11 +6,20 @@
 #include <netdb.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <sys/select.h>
 #include <fcntl.h>
 #include "pisocket.h"
 
 struct sockaddr_in address;
 
+Client clients[MAX_CLIENTS] = {0};
+
+void initClientArray() {
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+        clients[i].socket = 0;
+        clients[i].id = -1;
+    }
+}
 
 int hostSocket(int port) {
     int server_fd;
@@ -42,7 +51,18 @@ int acceptClient(int server) {
 
     printf("Client connected\n");
 
-    return new_socket;
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+        if (clients[i].socket == 0) {
+            clients[i].socket = new_socket;
+            clients[i].id = i;
+            printf("Assigned client ID: %d\n", i);
+            return new_socket;
+        }
+    }
+
+    printf("Max clients on server\n");
+    close(new_socket);
+    return -1;
 }
 
 void closeClient(int client) {
@@ -67,9 +87,7 @@ int connectSocket(char *host, int port) {
     struct hostent *server = gethostbyname(host);
     memcpy(&address.sin_addr.s_addr, server->h_addr, server->h_length);
 
-
     connect(client_fd, (struct sockaddr *)&address, sizeof(address));
-
 
     char ip[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &(address.sin_addr), ip, INET_ADDRSTRLEN);
@@ -83,25 +101,36 @@ void disconnectSocket(int server) {
     printf("Disconnected from server\n");
 }
 
-void sendData(int socket, enum DataType type, int value) {
-    char buffer[256];
+void sendToServer(int socket, enum DataType type, int value) {
+    char buffer[BUFFER_SIZE];
     sprintf(buffer, "%d %d", type, value);
     write(socket, buffer, strlen(buffer));
     printf("Data sent: %s\n", buffer);
 }
 
+void sendToClient(int clientId, enum DataType type, int value) {
+    if (clientId < 0 || clientId >= MAX_CLIENTS || clients[clientId].socket == 0) {
+        printf("Client %d not connected\n", clientId);
+        return;
+    }
+
+    char buffer[BUFFER_SIZE];
+    sprintf(buffer, "%d %d", type, value);
+    write(clients[clientId].socket, buffer, strlen(buffer));
+    printf("Data sent to client %d: %s\n", clientId, buffer);
+}
+
 int listenForData(int socket, enum DataType *type, int *value) {
-    char buffer[256];
+    char buffer[BUFFER_SIZE];
     int n = read(socket, buffer, 255);
     if (n <= 0) {
         return 0;
     }
-    if (n > 0) {
-        buffer[n] = '\0';
-        int typeInt;
-        sscanf(buffer, "%d %d", &typeInt, value);
-        *type = (enum DataType)typeInt;
-        return 1;
-    }
-    return 0;
+
+    buffer[n] = '\0';
+    int typeInt;
+    sscanf(buffer, "%d %d", &typeInt, value);
+    *type = (enum DataType)typeInt;
+
+    return 1;
 }

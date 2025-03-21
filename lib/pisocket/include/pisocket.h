@@ -5,6 +5,29 @@
 #ifndef PISOCKET_H
 #define PISOCKET_H
 
+#define MAX_CLIENTS 4 /**<Maximaal aantal clients dat kan worden geaccepteerd.*/
+#define BUFFER_SIZE 256 /**<Grootte van de buffer voor het ontvangen van data.*/
+
+typedef struct {
+    int socket;
+    int id;
+} Client; /**<Structuur voor het bijhouden van client sockets.*/
+
+/**
+ * @enum DataType
+ * @brief Enumeratie van de verschillende types van data die kunnen worden verzonden.
+ */
+enum DataType {
+    BUTTON, /**<Button data>*/
+    SENSOR, /**<Semsor data>*/
+    RGBLED /**<RGB LED data>*/
+};
+
+/**
+ * @brief Initialiseert de client array.
+ */
+void initClientArray();
+
 /**
  * @brief Host een server socket op de opgegeven poort.
  *
@@ -49,14 +72,7 @@ int connectSocket(char *host, int port);
  */
 void disconnectSocket(int server);
 
-/**
- * @enum DataType
- * @brief Enumeratie van de verschillende types van data die kunnen worden verzonden.
- */
-enum DataType {
-    BUTTON, /**<Button data*/
-    SENSOR, /**<Semsor data*/
-};
+
 
 /**
  * @brief Verzendt data van het opgegeven type en waarde.
@@ -65,7 +81,16 @@ enum DataType {
  * @param type De type van de data die wordt verzonden.
  * @param value De waarde van de data die wordt verzonden.
  */
-void sendData(int socket, enum DataType type, int value);
+void sendToServer(int socket, enum DataType type, int value);
+
+/**
+ * @brief Verzendt data van het opgegeven type en waarde.
+ *
+ * @param clientId De id van de client
+ * @param type De type van de data die wordt verzonden.
+ * @param value De waarde van de data die wordt verzonden.
+ */
+void sendToClient(int clientId, enum DataType type, int value);
 
 /**
  * @brief Luistert naar data die wordt ontvangen.
