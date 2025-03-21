@@ -98,7 +98,7 @@ int listenForData(int socket, enum DataType *type, int *value) {
     if (n > 0) {
         buffer[n] = '\0';
         int temp;
-        sscanf(buffer, "%d %d", (int *)temp, value);
+        sscanf(buffer, "%d %d", &temp, value);
         *type = (enum DataType)temp;
         return 1;
     }
