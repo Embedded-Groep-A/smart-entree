@@ -58,20 +58,17 @@ int acceptClient(int server) {
     int flags = fcntl(new_socket, F_GETFL, 0);
     fcntl(new_socket, F_SETFL, flags | O_NONBLOCK);
 
-    printf("Client connected\n");
-
-    for (int i = 0; i < MAX_CLIENTS; i++) {
-        if (clients[i].socket == 0) {
-            clients[i].socket = new_socket;
-            clients[i].id = i;
-            printf("Assigned client ID: %d\n", i);
-            return new_socket;
-        }
+    int client_id = assignClientId();
+    if (client_id >= 0) {
+        clients[client_id].socket = new_socket;
+        clients[client_id].id = client_id;
+        printf("New client connected, assigned ID: %d\n", client_id);
+        return new_socket;
+    } else {
+        printf("Max clients reached. Rejecting new client.\n");
+        close(new_socket);
+        return -1;
     }
-
-    printf("Max clients on server\n");
-    close(new_socket);
-    return -1;
 }
 
 void closeClient(int client) {
