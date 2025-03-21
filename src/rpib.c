@@ -59,6 +59,7 @@ int main() {
                     closeClient(clients[i].socket);
                     clients[i].socket = 0;
                     clients[i].id = -1;
+                }
             }
         }
     }
