@@ -34,7 +34,7 @@ int main() {
         if (FD_ISSET(server_fd, &read_fds)) {
             int client_fd = acceptClient(server_fd);
             if (client_fd >= 0) {
-                int client_id = assignClientID();
+                int client_id = assignClientId();
                 if (client_id >= 0) {
                     clients[client_id].socket = client_fd;
                     clients[client_id].id = client_id;
