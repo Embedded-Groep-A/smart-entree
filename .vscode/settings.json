@@ -1,8 +1,0 @@
-{
-    "C_Cpp.errorSquiggles": "enabled",
-    "files.associations": {
-        "*.embeddedhtml": "html",
-        "string.h": "c",
-        "select.h": "c"
-    }
-}
