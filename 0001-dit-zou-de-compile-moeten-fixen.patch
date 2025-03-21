@@ -1,0 +1,121 @@
+From 758e89cdce38b097d0570f48639ccdb466ace39d Mon Sep 17 00:00:00 2001
+From: Daan Breur <git@daanbreur.systems>
+Date: Fri, 21 Mar 2025 16:20:07 +0100
+Subject: [PATCH] dit zou de compile moeten fixen
+
+---
+ lib/wmsocket/src/wmsocket.h | 10 +++++-----
+ platformio.ini              |  3 ---
+ src/wemosrgb.cpp            | 24 ++++++++++++++----------
+ 3 files changed, 19 insertions(+), 18 deletions(-)
+
+diff --git a/lib/wmsocket/src/wmsocket.h b/lib/wmsocket/src/wmsocket.h
+index 3f2d548..bdd18da 100644
+--- a/lib/wmsocket/src/wmsocket.h
++++ b/lib/wmsocket/src/wmsocket.h
+@@ -4,19 +4,19 @@
+ #include <Arduino.h>
+ #include <ESP8266WiFi.h>
+ 
+-enum DataType {
++enum DataType
++{
+     BUTTON,
+     SENSOR,
+     RGBLED
+ };
+- 
+ 
+-void setupWiFiconnection(const char* ssid, const char* password);
++void setupWiFiconnection(const char *ssid, const char *password);
+ 
+-WiFiClient connectSocket(const char* host, int port);
++WiFiClient connectSocket(const char *host, int port);
+ 
+ void sendToServer(WiFiClient &client, DataType type, int value);
+ 
+-int listenForData(WiFiClient &client, DataType* type, int *value);
++int listenForData(WiFiClient &client, DataType *type, int *value);
+ 
+ #endif // WMSOCKET_H
+\ No newline at end of file
+diff --git a/platformio.ini b/platformio.ini
+index 27c1369..9268b0a 100644
+--- a/platformio.ini
++++ b/platformio.ini
+@@ -1,6 +1,4 @@
+ ; PlatformIO Project Configuration File
+-;
+-; build_src_filter: elke file bij de juiste env zetten voor compile
+ 
+ [env:d1_mini_lite]
+ platform = espressif8266
+@@ -10,7 +8,6 @@ upload_speed = 460800
+ monitor_speed = 115200
+ src_filter = +<wemosrgb.cpp>
+ upload_port = COM4
+-lib_deps = lib/wmsocket
+ 
+ [env:nucleo_l432kc]
+ platform = ststm32
+diff --git a/src/wemosrgb.cpp b/src/wemosrgb.cpp
+index 590d057..796a667 100644
+--- a/src/wemosrgb.cpp
++++ b/src/wemosrgb.cpp
+@@ -1,5 +1,5 @@
+-//RGB LED OP WEMOS D1 MINI
+-// AANGESTUURD VIA SOCKET MET RPIB
++// RGB LED OP WEMOS D1 MINI
++//  AANGESTUURD VIA SOCKET MET RPIB
+ #include <Arduino.h>
+ #include <ESP8266WiFi.h>
+ #include "wmsocket.h"
+@@ -8,14 +8,15 @@
+ #define RGB_G D6
+ #define RGB_B D7
+ 
+-const char* ssid = "707";
+-const char* password = "DEFCAB1960";
+-const char* hostname = "bramsvoorhoofd.local";
++const char *ssid = "707";
++const char *password = "DEFCAB1960";
++const char *hostname = "bramsvoorhoofd.local";
+ const int port = 8069;
+ 
+ WiFiClient client;
+ 
+-void setup() {
++void setup()
++{
+     Serial.begin(115200);
+     setupWiFiconnection(ssid, password);
+     client = connectSocket(hostname, port);
+@@ -25,17 +26,20 @@ void setup() {
+     pinMode(RGB_B, OUTPUT);
+ }
+ 
+-void loop() {
++void loop()
++{
+     enum DataType type;
+     int value;
+     int readStatus = listenForData(&client, &type, &value);
+     Serial.println("type: " + String(type) + ", value: " + String(value));
+ 
+-    if (readStatus > 0) {
+-        if (type == RGBLED) {
++    if (readStatus > 0)
++    {
++        if (type == RGBLED)
++        {
+             analogWrite(RGB_R, (value >> 16) & 0xFF);
+             analogWrite(RGB_G, (value >> 8) & 0xFF);
+             analogWrite(RGB_B, value & 0xFF);
+         }
+     }
+-}
+\ No newline at end of file
++}
+-- 
+2.39.1.windows.1
+
