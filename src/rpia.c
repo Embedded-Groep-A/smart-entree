@@ -6,7 +6,7 @@
 #include "pisocket.h"
 
 #define PORT 8069
-#define HOST "raspberrypi.local"
+#define HOST "bramsvoorhoofd.local"
 
 
 int main() {
