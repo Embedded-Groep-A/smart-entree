@@ -76,6 +76,7 @@ int main() {
             sscanf(input, "%hhu %hhu %hhu", &rgbValues[0], &rgbValues[1], &rgbValues[2]);
             sendToClient(0, RGBLED, (void *)rgbValues, sizeof(rgbValues));
             printf("send func exited\n");
+            return;
         }
         printf("7");
     }
