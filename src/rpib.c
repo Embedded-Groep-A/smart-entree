@@ -18,9 +18,11 @@ int main() {
 
 
     while (1) {
+        printf("1");
         FD_ZERO(&read_fds);
         FD_SET(server_fd, &read_fds);
         int max_fd = server_fd;
+        printf("2");
 
         for (int i = 0; i < MAX_CLIENTS; i++) {
             if (clients[i].socket > 0) {
@@ -30,13 +32,15 @@ int main() {
                 }
             }
         }
+        printf("3");
 
         select(max_fd + 1, &read_fds, NULL, NULL, NULL);
-
+        printf("4");
 
         if (FD_ISSET(server_fd, &read_fds)) {
             int client_fd = acceptClient(server_fd);
         }
+        printf("5");
 
         for (int i = 0; i < MAX_CLIENTS; i++) {
             if (clients[i].socket > 0 && FD_ISSET(clients[i].socket, &read_fds)) {
@@ -65,13 +69,13 @@ int main() {
                 }
             }
         }
+        printf("6");
         char input[20];
-        if (FD_ISSET(STDIN_FILENO, &read_fds)) {
-            if (fgets(input, sizeof(input), stdin) != NULL) {
-                uint8_t rgbValues[3];
-                sscanf(input, "%hhu %hhu %hhu", &rgbValues[0], &rgbValues[1], &rgbValues[2]);
-                sendToClient(0, RGBLED, (void *)rgbValues, sizeof(rgbValues));
-            }
+        if (fgets(input, sizeof(input), stdin) != NULL) {
+            uint8_t rgbValues[3];
+            sscanf(input, "%hhu %hhu %hhu", &rgbValues[0], &rgbValues[1], &rgbValues[2]);
+            sendToClient(0, RGBLED, (void *)rgbValues, sizeof(rgbValues));
         }
+        printf("7");
     }
 }
