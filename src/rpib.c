@@ -15,11 +15,12 @@ int main() {
     initClientArray();
 
     fd_set read_fds;
-    int max_fd = server_fd;
+
 
     while (1) {
         FD_ZERO(&read_fds);
         FD_SET(server_fd, &read_fds);
+        int max_fd = server_fd;
 
         for (int i = 0; i < MAX_CLIENTS; i++) {
             if (clients[i].socket > 0) {
@@ -30,11 +31,8 @@ int main() {
             }
         }
 
-        int act = select(max_fd + 1, &read_fds, NULL, NULL, NULL);
-        if (act < 0) {
-            printf("Error in select\n");
-            continue;
-        }
+        select(max_fd + 1, &read_fds, NULL, NULL, NULL);
+
 
         if (FD_ISSET(server_fd, &read_fds)) {
             int client_fd = acceptClient(server_fd);
@@ -67,7 +65,6 @@ int main() {
                 }
             }
         }
-        printf("send\n");
         char input[20];
         if (fgets(input, sizeof(input), stdin) != NULL) {
             uint8_t rgbValues[3];
