@@ -7,6 +7,8 @@
 #define PORT 8069
 #define MAX_CLIENTS 4
 
+
+
 int main() {
     int server_fd = hostSocket(PORT);
     initClientArray();
@@ -35,12 +37,23 @@ int main() {
         for (int i = 0; i < MAX_CLIENTS; i++) {
             if (clients[i].socket > 0 && FD_ISSET(clients[i].socket, &read_fds)) {
                 enum DataType type;
-                int value;
-                int readStatus = listenForData(clients[i].socket, &type, &value);
+                uint8_t receivedData[4];
+                size_t receivedSize;
 
-                if (readStatus > 0) {
-                    printf("Received data from client %d: Type: %d, Value: %d\n", clients[i].id, type, value);
-                } else if (readStatus == 0) {
+                if (listenForData(clients[i].socket, &type, receivedData, &receivedSize) > 0) {
+                    switch (type) {
+                        case BUTTON:
+                        case SENSOR: {
+                            int32_t value;
+                            memcpy(&value, receivedData, sizeof(value));
+                            printf("Received %s: %d\n", (type == BUTTON) ? "BUTTON" : "SENSOR", value);
+                            break;
+                        }
+                        case RGBLED:
+                            printf("Received RGB: %u %u %u\n", receivedData[0], receivedData[1], receivedData[2]);
+                            break;
+                    }
+                } else {
                     printf("Client %d disconnected\n", clients[i].id);
                     closeClient(clients[i].socket);
                     clients[i].socket = 0;
@@ -49,13 +62,11 @@ int main() {
             }
         }
 
-        char input[100];
+        char input[20];
         if (fgets(input, sizeof(input), stdin) != NULL) {
-            int r, g, b;
-            sscanf(input, "%d %d %d", &r, &g, &b);
-            char buffer[256];
-            sprintf(buffer, "%d %d %d", r, g, b);
-            sendToClient(0, RGBLED, buffer);
+            uint8_t rgbValues[3];
+            sscanf(input, "%hhu %hhu %hhu", &rgbValues[0], &rgbValues[1], &rgbValues[2]);
+            sendToClient(0, RGBLED, rgbValues, sizeof(rgbValues));
         }
         
     }

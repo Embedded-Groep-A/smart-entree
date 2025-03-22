@@ -26,20 +26,34 @@ void setup()
     pinMode(RGB_B, OUTPUT);
 }
 
-void loop()
-{
-    enum DataType type;
-    int value;
-    int readStatus = listenForData(&client, &type, &value);
-    Serial.println("type: " + String(type) + ", value: " + String(value));
+void loop() {
+    DataType type;
+    uint8_t receivedData[4];
+    size_t receivedSize;
 
-    if (readStatus > 0)
-    {
-        if (type == RGBLED)
-        {
-            analogWrite(RGB_R, (value >> 16) & 0xFF);
-            analogWrite(RGB_G, (value >> 8) & 0xFF);
-            analogWrite(RGB_B, value & 0xFF);
+    int readStatus = listenForData(client, &type, receivedData, &receivedSize);
+
+    if (readStatus > 0) {
+        Serial.print("Type: ");
+        Serial.print(type);
+        Serial.print(", Value: ");
+
+        if (type == BUTTON || type == SENSOR) {
+            int32_t value;
+            memcpy(&value, receivedData, sizeof(value));
+            Serial.println(value);
+        } 
+        else if (type == RGBLED) {
+            uint8_t r = receivedData[0];
+            uint8_t g = receivedData[1];
+            uint8_t b = receivedData[2];
+
+            Serial.printf("RGB: %u, %u, %u\n", r, g, b);
+
+            analogWrite(RGB_R, r);
+            analogWrite(RGB_G, g);
+            analogWrite(RGB_B, b);
         }
     }
 }
+

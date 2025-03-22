@@ -23,22 +23,41 @@ WiFiClient connectSocket(const char* host, int port) {
       return client;
 }
 
-void sendToServer(WiFiClient &client, DataType type, int value) {
-    char buffer[32];
-    sprintf(buffer, "%d %d", type, value);
-    client.print(buffer);
-    client.print("\n");
-    Serial.printf("Data sent: %s\n", buffer);
+void sendToServer(WiFiClient &client, DataType type, void *value, size_t size) {
+    uint8_t buffer[1 + size];
+    buffer[0] = (uint8_t)type;
+    memcpy(buffer + 1, value, size);
+
+    client.write(buffer, sizeof(buffer));
+    Serial.printf("Data sent (Type: %d, Size: %zu bytes)\n", type, size);
 }
 
-int listenForData(WiFiClient &client, DataType *type, int *value) {
-    if (client.available()) {
-        char buffer[32];
-        client.readBytesUntil('\n', buffer, 32);
-        int typeInt;
-        sscanf(buffer, "%d %d", &typeInt, value);
-        *type = (enum DataType)typeInt;
-        return 1;
+int listenForData(WiFiClient &client, DataType *type, void *value, size_t *size) {
+    if (!client.connected() || !client.available()) {
+        return 0;
     }
-    return 0;
+
+    uint8_t buffer[4];
+
+    int bytesRead = client.read(buffer, sizeof(buffer));
+    if (bytesRead < 1) return 0;
+
+    *type = (DataType)buffer[0];
+
+    switch (*type) {
+        case BUTTON:
+        case SENSOR:
+            if (bytesRead < 5) return -1;
+            memcpy(value, buffer + 1, sizeof(int32_t));
+            *size = sizeof(int32_t);
+            break;
+        case RGBLED:
+            if (bytesRead < 4) return -1;
+            memcpy(value, buffer + 1, 3);
+            *size = 3;
+            break;
+        default:
+            return -1;
+
+    return 1;
 }

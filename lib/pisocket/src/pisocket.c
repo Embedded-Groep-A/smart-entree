@@ -111,29 +111,43 @@ void sendToServer(int socket, enum DataType type, int value) {
     printf("Data sent: %s\n", buffer);
 }
 
-void sendToClient(int clientId, enum DataType type, int value) {
+void sendToClient(int clientId, enum DataType type, void *value, size_t size) {
     if (clientId < 0 || clientId >= MAX_CLIENTS || clients[clientId].socket == 0) {
         printf("Client %d not connected\n", clientId);
         return;
     }
 
-    char buffer[BUFFER_SIZE];
-    sprintf(buffer, "%d %d", type, value);
-    write(clients[clientId].socket, buffer, strlen(buffer));
-    printf("Data sent to client %d: %s\n", clientId, buffer);
+    uint8_t buffer[BUFFER_SIZE];
+    buffer[0] = (uint8_t)type;
+    memcpy(buffer + 1, value, valueSize);
+    write(clients[clientId].socket, buffer, size + 1);
+    printf("Data sent to client %d (Type: %d, Size: %zu bytes)\n", clientId, type, size);
 }
 
-int listenForData(int socket, enum DataType *type, int *value) {
-    char buffer[BUFFER_SIZE];
-    int n = read(socket, buffer, 255);
+int listenForData(int socket, enum DataType *type, void *value, size_t *size) {
+    uint8_t buffer[BUFFER_SIZE];
+    int n = read(socket, buffer, BUFFER_SIZE);
+
     if (n <= 0) {
         return n;
     }
 
-    buffer[n] = '\0';
-    int typeInt;
-    sscanf(buffer, "%d %d", &typeInt, value);
-    *type = (enum DataType)typeInt;
+    *type = (enum DataType)buffer[0];
 
+    switch (*type) {
+        case BUTTON:
+        case SENSOR:
+            if (n < 5) return -1;
+            memcpy(value, buffer + 1, sizeof(int32_t));
+            *valueSize = sizeof(int32_t);
+            break;
+        case RGBLED:
+            if (n < 4) return -1;
+            memcpy(value, buffer + 1, 3);
+            *valueSize = 3;
+            break;
+        default:
+            return -1;
+    }
     return 1;
 }

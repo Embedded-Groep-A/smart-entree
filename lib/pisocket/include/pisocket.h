@@ -36,8 +36,8 @@ void disconnectSocket(int server);
 
 void sendToServer(int socket, enum DataType type, int value);
 
-void sendToClient(int clientId, enum DataType type, int value);
+void sendToClient(int clientId, enum DataType type, void *value, size_t size);
 
-int listenForData(int socket, enum DataType *type, int *value);
+int listenForData(int socket, enum DataType *type, void *value, size_t *size);
 
 #endif // PISOCKET_H
