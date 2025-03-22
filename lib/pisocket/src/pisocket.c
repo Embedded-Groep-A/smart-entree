@@ -120,7 +120,7 @@ void sendToClient(int clientId, enum DataType type, void *value, size_t size) {
 
     uint8_t buffer[BUFFER_SIZE];
     buffer[0] = (uint8_t)type;
-    memcpy(buffer + 1, value, valueSize);
+    memcpy(buffer + 1, value, size);
     write(clients[clientId].socket, buffer, size + 1);
     printf("Data sent to client %d (Type: %d, Size: %zu bytes)\n", clientId, type, size);
 }
