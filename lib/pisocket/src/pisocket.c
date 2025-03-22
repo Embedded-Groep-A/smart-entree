@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
@@ -139,12 +140,12 @@ int listenForData(int socket, enum DataType *type, void *value, size_t *size) {
         case SENSOR:
             if (n < 5) return -1;
             memcpy(value, buffer + 1, sizeof(int32_t));
-            *valueSize = sizeof(int32_t);
+            *size = sizeof(int32_t);
             break;
         case RGBLED:
             if (n < 4) return -1;
             memcpy(value, buffer + 1, 3);
-            *valueSize = 3;
+            *size = 3;
             break;
         default:
             return -1;

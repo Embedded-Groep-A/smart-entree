@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <unistd.h>
 #include "pisocket.h"
@@ -66,7 +67,7 @@ int main() {
         if (fgets(input, sizeof(input), stdin) != NULL) {
             uint8_t rgbValues[3];
             sscanf(input, "%hhu %hhu %hhu", &rgbValues[0], &rgbValues[1], &rgbValues[2]);
-            sendToClient(0, RGBLED, rgbValues, sizeof(rgbValues));
+            sendToClient(0, RGBLED, (void *)rgbValues, sizeof(rgbValues));
         }
         
     }
