@@ -65,12 +65,12 @@ int main() {
         }
 
         char input[20];
-        if (fgets(input, sizeof(input), stdin) != NULL) {
-            uint8_t rgbValues[3];
-            sscanf(input, "%hhu %hhu %hhu", &rgbValues[0], &rgbValues[1], &rgbValues[2]);
-            printf("Sending RGB: %u %u %u\n", rgbValues[0], rgbValues[1], rgbValues[2]);
-            sendToClient(0, RGBLED, (void *)rgbValues, sizeof(rgbValues));
-        }
-        
+        printf(fgets(input, sizeof(input), stdin));
+        // if (fgets(input, sizeof(input), stdin) != NULL) {
+        //     uint8_t rgbValues[3];
+        //     sscanf(input, "%hhu %hhu %hhu", &rgbValues[0], &rgbValues[1], &rgbValues[2]);
+        //     sendToClient(0, RGBLED, (void *)rgbValues, sizeof(rgbValues));
+        // }
+        sleep(1);
     }
 }
