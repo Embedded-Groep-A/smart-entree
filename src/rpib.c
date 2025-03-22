@@ -65,7 +65,7 @@ int main() {
         }
 
         char input[20];
-        printf(fgets(input, sizeof(input), stdin));
+        printf("%p",fgets(input, sizeof(input), stdin));
         // if (fgets(input, sizeof(input), stdin) != NULL) {
         //     uint8_t rgbValues[3];
         //     sscanf(input, "%hhu %hhu %hhu", &rgbValues[0], &rgbValues[1], &rgbValues[2]);
