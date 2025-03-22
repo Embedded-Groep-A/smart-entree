@@ -58,7 +58,6 @@ int listenForData(WiFiClient &client, DataType *type, void *value, size_t *size)
             break;
         default:
             return -1;
-
-    return 1;
     }
+    return 1;
 }

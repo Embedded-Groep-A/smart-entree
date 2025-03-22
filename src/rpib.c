@@ -31,6 +31,7 @@ int main() {
         }
 
         select(max_fd + 1, &read_fds, NULL, NULL, NULL);
+
         if (FD_ISSET(server_fd, &read_fds)) {
             int client_fd = acceptClient(server_fd);
         }
@@ -67,6 +68,7 @@ int main() {
         if (fgets(input, sizeof(input), stdin) != NULL) {
             uint8_t rgbValues[3];
             sscanf(input, "%hhu %hhu %hhu", &rgbValues[0], &rgbValues[1], &rgbValues[2]);
+            printf("Sending RGB: %u %u %u\n", rgbValues[0], rgbValues[1], rgbValues[2]);
             sendToClient(0, RGBLED, (void *)rgbValues, sizeof(rgbValues));
         }
         
