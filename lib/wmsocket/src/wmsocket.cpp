@@ -60,4 +60,5 @@ int listenForData(WiFiClient &client, DataType *type, void *value, size_t *size)
             return -1;
 
     return 1;
+    }
 }
