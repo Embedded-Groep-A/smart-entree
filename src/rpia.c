@@ -16,10 +16,10 @@ int main() {
 
     while (1) {
         sendToServer(client_fd, RGBLED, rgbValues, 3);
-        rgbValues[0] = (rgbValues[0] + 10) % 256;
-        rgbValues[1] = (rgbValues[1] + 10) % 256;
-        rgbValues[2] = (rgbValues[2] + 10) % 256;
-        usleep(100000);
+        rgbValues[0] = (rgbValues[0] + 1) % 256;
+        rgbValues[1] = (rgbValues[1] + 1) % 256;
+        rgbValues[2] = (rgbValues[2] + 1) % 256;
+        usleep(10000);
 
     }
     return 0;
