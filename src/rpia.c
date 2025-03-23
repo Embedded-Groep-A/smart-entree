@@ -1,6 +1,7 @@
 // RPI MET I2C NAAR L432KC {raspberrypi}
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <unistd.h>
 #include "pisocket.h"
