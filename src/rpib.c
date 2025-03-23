@@ -39,33 +39,33 @@ int main() {
             int client_fd = acceptClient(server_fd);
         }
 
-        // for (int i = 0; i < MAX_CLIENTS; i++) {
-        //     if (clients[i].socket > 0 && FD_ISSET(clients[i].socket, &read_fds)) {
-        //         enum DataType type;
-        //         uint8_t receivedData[4];
-        //         size_t receivedSize;
+        for (int i = 0; i < MAX_CLIENTS; i++) {
+            if (clients[i].socket > 0 && FD_ISSET(clients[i].socket, &read_fds)) {
+                enum DataType type;
+                uint8_t receivedData[4];
+                size_t receivedSize;
 
-        //         if (listenForData(clients[i].socket, &type, receivedData, &receivedSize) > 0) {
-        //             switch (type) {
-        //                 case BUTTON:
-        //                 case SENSOR: {
-        //                     int32_t value;
-        //                     memcpy(&value, receivedData, sizeof(value));
-        //                     printf("Received %s: %d\n", (type == BUTTON) ? "BUTTON" : "SENSOR", value);
-        //                     break;
-        //                 }
-        //                 case RGBLED:
-        //                     printf("Received RGB: %u %u %u\n", receivedData[0], receivedData[1], receivedData[2]);
-        //                     break;
-        //             }
-        //         } else {
-        //             printf("Client %d disconnected\n", clients[i].id);
-        //             closeClient(clients[i].socket);
-        //             clients[i].socket = 0;
-        //             clients[i].id = -1;
-        //         }
-        //     }
-        // }
+                if (listenForData(clients[i].socket, &type, receivedData, &receivedSize) > 0) {
+                    switch (type) {
+                        case BUTTON:
+                        case SENSOR: {
+                            int32_t value;
+                            memcpy(&value, receivedData, sizeof(value));
+                            printf("Received %s: %d\n", (type == BUTTON) ? "BUTTON" : "SENSOR", value);
+                            break;
+                        }
+                        case RGBLED:
+                            printf("Received RGB: %u %u %u\n", receivedData[0], receivedData[1], receivedData[2]);
+                            break;
+                    }
+                } else {
+                    printf("Client %d disconnected\n", clients[i].id);
+                    closeClient(clients[i].socket);
+                    clients[i].socket = 0;
+                    clients[i].id = -1;
+                }
+            }
+        }
 
         fd_set input_fds;
         FD_ZERO(&input_fds);
