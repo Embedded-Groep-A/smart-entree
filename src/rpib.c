@@ -53,11 +53,11 @@ int main() {
                         case SENSOR: {
                             int32_t value;
                             memcpy(&value, receivedData, sizeof(value));
-                            printf("Received %s: %d\n", (type == BUTTON) ? "BUTTON" : "SENSOR", value);
+                            printf("Received from client %d %s: %d\n", clients[i].id, (type == BUTTON) ? "BUTTON" : "SENSOR", value);
                             break;
                         }
                         case RGBLED:
-                            printf("Received RGB: %u %u %u\n", receivedData[0], receivedData[1], receivedData[2]);
+                            printf("Received RGB from client %d: %u %u %u\n", clients[i].id, receivedData[0], receivedData[1], receivedData[2]);
                             break;
                     }
                 } else if (status == 0) {
