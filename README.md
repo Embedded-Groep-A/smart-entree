@@ -1,5 +1,6 @@
 # smart-entree
 complete codebase van de smart entree voor L &amp; B. Embedded Groep A 24-25
+based on platform io
 
 ## RPi A
 $I^2C$ bus met STM 32 L432KC   
