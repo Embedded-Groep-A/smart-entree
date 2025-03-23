@@ -11,14 +11,10 @@
 
 int main() {
     int client_fd = connectSocket(HOST, PORT);
-    // sendToServer(client_fd, BUTTON, 1);
-    // sleep(1);
-    // sendToServer(client_fd, BUTTON, 0);
-    // sleep(5);
+    uint8_t rgbValues[3] = {255, 0, 0};
 
-    // disconnectSocket(client_fd);
     while (1) {
-        sendToServer(client_fd, RGBLED, 0);
+        sendToServer(client_fd, RGBLED, rgbValues, 3);
         sleep(1);
 
     }

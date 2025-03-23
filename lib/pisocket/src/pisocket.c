@@ -107,11 +107,12 @@ void disconnectSocket(int server) {
     printf("Disconnected from server\n");
 }
 
-void sendToServer(int socket, enum DataType type, int value) {
-    char buffer[BUFFER_SIZE];
-    sprintf(buffer, "%d %d", type, value);
-    write(socket, buffer, strlen(buffer));
-    printf("Data sent: %s\n", buffer);
+void sendToServer(int socket, enum DataType type, void *value size_t size) {
+    uint8_t buffer[BUFFER_SIZE];
+    buffer[0] = (uint8_t)type;
+    memcpy(buffer + 1, value, size);
+    write(socket, buffer, size + 1);
+    printf("Data sent to server %d (Type: %d, Size: %zu bytes)\n", clientId, type, size);
 }
 
 void sendToClient(int clientId, enum DataType type, void *value, size_t size) {

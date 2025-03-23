@@ -34,7 +34,7 @@ int connectSocket(char *host, int port);
 
 void disconnectSocket(int server);
 
-void sendToServer(int socket, enum DataType type, int value);
+void sendToServer(int socket, enum DataType type, void *value, size_t size);
 
 void sendToClient(int clientId, enum DataType type, void *value, size_t size);
 

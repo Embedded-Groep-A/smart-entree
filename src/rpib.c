@@ -45,7 +45,9 @@ int main() {
                 uint8_t receivedData[4];
                 size_t receivedSize;
 
-                if (listenForData(clients[i].socket, &type, receivedData, &receivedSize) > 0) {
+                int status = listenForData(clients[i].socket, &type, receivedData, &receivedSize);
+
+                if (status > 0) {
                     switch (type) {
                         case BUTTON:
                         case SENSOR: {
@@ -58,7 +60,7 @@ int main() {
                             printf("Received RGB: %u %u %u\n", receivedData[0], receivedData[1], receivedData[2]);
                             break;
                     }
-                } else {
+                } else if (status == 0) {
                     printf("Client %d disconnected\n", clients[i].id);
                     closeClient(clients[i].socket);
                     clients[i].socket = 0;
