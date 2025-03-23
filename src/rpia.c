@@ -19,7 +19,7 @@ int main() {
         rgbValues[0] = (rgbValues[0] + 1) % 256;
         rgbValues[1] = (rgbValues[1] + 1) % 256;
         rgbValues[2] = (rgbValues[2] + 1) % 256;
-        usleep(4000);
+        usleep(100000);
 
     }
     return 0;

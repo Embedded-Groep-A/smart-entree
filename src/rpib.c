@@ -59,6 +59,8 @@ int main() {
                         }
                         case RGBLED:
                             printf("Received RGB from client %d: %u %u %u\n", clients[i].id, receivedData[0], receivedData[1], receivedData[2]);
+                            uint8_t rgbValues[3] = {receivedData[0], receivedData[1], receivedData[2]};
+                            sendToClient(clients[i].id, RGBLED, (void *)rgbValues, sizeof(rgbValues));
                             break;
                     }
                 } else if (status == 0) {
@@ -82,8 +84,6 @@ int main() {
         //         sendToClient(0, RGBLED, (void *)rgbValues, sizeof(rgbValues));
         //     }
         // }
-        uint8_t rgbValues[3] = {receivedData[0], receivedData[1], receivedData[2]};
-        sendToClient(0, RGBLED, (void *)rgbValues, sizeof(rgbValues));
 
     }
 }
