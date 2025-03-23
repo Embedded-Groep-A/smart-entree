@@ -56,6 +56,8 @@ int hostSocket(int port) {
 int acceptClient(int server) {
     int addrlen = sizeof(address);
     int new_socket = accept(server, (struct sockaddr *)&address, (socklen_t*)&addrlen);
+    int flags = fcntl(new_socket, F_GETFL, 0);
+    fcntl(new_socket, F_SETFL, flags | O_NONBLOCK);
 
     int client_id = assignClientId();
     if (client_id >= 0) {
