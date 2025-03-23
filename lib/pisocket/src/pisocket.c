@@ -123,17 +123,7 @@ void sendToClient(int clientId, enum DataType type, void *value, size_t size) {
     uint8_t buffer[BUFFER_SIZE];
     buffer[0] = (uint8_t)type;
     memcpy(buffer + 1, value, size);
-
-    size_t totalWritten = 0;
-    while (totalWritten < size + 1) {
-        ssize_t written = write(clients[clientId].socket, buffer + totalWritten, size + 1 - totalWritten);
-        if (written == -1) {
-            perror("Write failed");
-            return;
-        }
-        totalWritten += written;
-    }
-
+    write(clients[clientId].socket, buffer, size + 1);
     printf("Data sent to client %d (Type: %d, Size: %zu bytes)\n", clientId, type, size);
 }
 
