@@ -107,7 +107,7 @@ void disconnectSocket(int server) {
     printf("Disconnected from server\n");
 }
 
-void sendToServer(int socket, enum DataType type, void *value size_t size) {
+void sendToServer(int socket, enum DataType type, void *value, size_t size) {
     uint8_t buffer[BUFFER_SIZE];
     buffer[0] = (uint8_t)type;
     memcpy(buffer + 1, value, size);
