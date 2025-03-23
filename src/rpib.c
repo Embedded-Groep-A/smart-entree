@@ -17,6 +17,8 @@ int main() {
     struct timeval timeout;
 
     while (1) {
+        uint8_t receivedData[4];
+
         FD_ZERO(&read_fds);
         FD_SET(server_fd, &read_fds);
         int max_fd = server_fd;
@@ -42,7 +44,6 @@ int main() {
         for (int i = 0; i < MAX_CLIENTS; i++) {
             if (clients[i].socket > 0 && FD_ISSET(clients[i].socket, &read_fds)) {
                 enum DataType type;
-                uint8_t receivedData[4];
                 size_t receivedSize;
 
                 int status = listenForData(clients[i].socket, &type, receivedData, &receivedSize);
@@ -73,14 +74,16 @@ int main() {
         FD_ZERO(&input_fds);
         FD_SET(STDIN_FILENO, &input_fds);
 
-        if (select(STDIN_FILENO + 1, &input_fds, NULL, NULL, &timeout) > 0 && FD_ISSET(STDIN_FILENO, &input_fds)) {
-            char input[20];
-            if (fgets(input, sizeof(input), stdin) != NULL) {
-                uint8_t rgbValues[3];
-                sscanf(input, "%hhu %hhu %hhu", &rgbValues[0], &rgbValues[1], &rgbValues[2]);
-                sendToClient(0, RGBLED, (void *)rgbValues, sizeof(rgbValues));
-            }
-        }
+        // if (select(STDIN_FILENO + 1, &input_fds, NULL, NULL, &timeout) > 0 && FD_ISSET(STDIN_FILENO, &input_fds)) {
+        //     char input[20];
+        //     if (fgets(input, sizeof(input), stdin) != NULL) {
+        //         uint8_t rgbValues[3];
+        //         sscanf(input, "%hhu %hhu %hhu", &rgbValues[0], &rgbValues[1], &rgbValues[2]);
+        //         sendToClient(0, RGBLED, (void *)rgbValues, sizeof(rgbValues));
+        //     }
+        // }
+        uint8_t rgbValues[3] = {receivedData[0], receivedData[1], receivedData[2]};
+        sendToClient(0, RGBLED, (void *)rgbValues, sizeof(rgbValues));
 
     }
 }

@@ -12,11 +12,14 @@
 
 int main() {
     int client_fd = connectSocket(HOST, PORT);
-    uint8_t rgbValues[3] = {255, 0, 0};
+    uint8_t rgbValues[3] = {0, 85, 170};
 
     while (1) {
         sendToServer(client_fd, RGBLED, rgbValues, 3);
-        sleep(1);
+        rgbValues[0] = (rgbValues[0] + 1) % 256;
+        rgbValues[1] = (rgbValues[1] + 1) % 256;
+        rgbValues[2] = (rgbValues[2] + 1) % 256;
+        usleep(4000);
 
     }
     return 0;
