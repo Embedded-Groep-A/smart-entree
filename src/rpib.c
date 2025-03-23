@@ -17,7 +17,6 @@ int main() {
     struct timeval timeout;
 
     while (1) {
-        printf("1");
         FD_ZERO(&read_fds);
         FD_SET(server_fd, &read_fds);
         int max_fd = server_fd;
@@ -68,7 +67,6 @@ int main() {
         //     }
         // }
 
-        printf("6");
         fd_set input_fds;
         FD_ZERO(&input_fds);
         FD_SET(STDIN_FILENO, &input_fds);
@@ -79,10 +77,8 @@ int main() {
                 uint8_t rgbValues[3];
                 sscanf(input, "%hhu %hhu %hhu", &rgbValues[0], &rgbValues[1], &rgbValues[2]);
                 sendToClient(0, RGBLED, (void *)rgbValues, sizeof(rgbValues));
-                printf("send func exited\n");
             }
         }
 
-        printf("7");
     }
 }
