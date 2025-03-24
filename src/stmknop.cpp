@@ -1,41 +1,32 @@
-//KNOP OP STM32L432KC
-//VERBONDEN MET RPIA VIA I2C
-#include <Arduino.h>
 #include <Wire.h>
 
-#define ADDR 0x69
-
-#define BTN PB5
-
-int readButton(int button) {
-    static int pressed = 0;
-
-    int reading = digitalRead(button);
-
-    if (reading == LOW && pressed == 0) {
-        pressed = 1;
-        return 1;
-    } else if (reading == HIGH) {
-        pressed = 0;
-    }
-
-    return 0;
-}
+#define I2C_ADDR 0x08
 
 void setup() {
+    Wire.begin(I2C_ADDR);
+    Wire.onReceive(receiveEvent);
+    Wire.onRequest(requestEvent);
     Serial.begin(115200);
-    Wire.begin(ADDR);
-
-    pinMode(BTN, INPUT_PULLUP);
+    Serial.println("STM32 I2C Slave Ready.");
 }
 
+volatile uint8_t receivedCommand = 0;
+
+void receiveEvent(int bytes) {
+    if (Wire.available()) {
+        receivedCommand = Wire.read();
+        Serial.print("Received command: ");
+        Serial.println(receivedCommand);
+    }
+}
+
+void requestEvent() {
+    uint8_t dataToSend = receivedCommand + 10;  // Example response
+    Wire.write(dataToSend);
+    Serial.print("Sent response: ");
+    Serial.println(dataToSend);
+}
 
 void loop() {
-    if (readButton(BTN)) {
-        Serial.println("Button pressed");
-        Wire.beginTransmission(ADDR);
-        Wire.write("BUTTON", 6);
-        Wire.endTransmission();
-    }
-    
+    // Do other processing if needed
 }

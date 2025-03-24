@@ -1,49 +1,50 @@
-// RPI MET I2C NAAR L432KC {raspberrypi}
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
-#include <unistd.h>
 #include <fcntl.h>
-#include <linux/i2c-dev.h>
+#include <unistd.h>
 #include <sys/ioctl.h>
-#include "pisocket.h"
+#include <linux/i2c-dev.h>
 
-#define PORT 8069
-#define HOST "bramsvoorhoofd.local"
-
-#define I2C_DEVICE "/dev/i2c-1"
-#define I2C_ADDR   0x20  
-
-uint8_t rgbValues[3] = {255, 255, 255};
+#define I2C_BUS "/dev/i2c-1"  // I2C bus on Raspberry Pi (use "/dev/i2c-0" for older models)
+#define I2C_ADDR 0x08         // STM32 I2C slave address
 
 int main() {
-    int file = open(I2C_DEVICE, O_RDWR);
-    if (file < 0) {
-        perror("Failed to open I2C device");
-        return EXIT_FAILURE;
+    int fd;
+    char buffer[1];
+
+    // Open I2C bus
+    if ((fd = open(I2C_BUS, O_RDWR)) < 0) {
+        perror("Failed to open the I2C bus");
+        return 1;
     }
 
-    if (ioctl(file, I2C_SLAVE, I2C_ADDR) < 0) {
+    // Specify the I2C slave device
+    if (ioctl(fd, I2C_SLAVE, I2C_ADDR) < 0) {
         perror("Failed to set I2C address");
-        close(file);
-        return EXIT_FAILURE;
+        close(fd);
+        return 1;
     }
 
-    while (1) {
-        char buffer[6];
-        int bytesRead = read(file, buffer, 6);
-        if (bytesRead < 0) {
-            perror("Failed to read from the i2c bus");
-        } else {
-            printf("Data read: ");
-            for (int i = 0; i < bytesRead; i++) {
-            printf("%02x ", buffer[i]);
-            }
-            printf("\n");
-        }
-
+    // Send a command byte (e.g., request sensor data)
+    buffer[0] = 0x01;  // Example command
+    if (write(fd, buffer, 1) != 1) {
+        perror("Failed to write to I2C device");
+        close(fd);
+        return 1;
     }
+    printf("Sent command: 0x%02X\n", buffer[0]);
 
+    // Small delay to allow the STM32 to process the request
+    usleep(10000);
+
+    // Read response (1 byte)
+    if (read(fd, buffer, 1) != 1) {
+        perror("Failed to read from I2C device");
+        close(fd);
+        return 1;
+    }
+    printf("Received data: 0x%02X (%d)\n", buffer[0], buffer[0]);
+
+    close(fd);
     return 0;
 }
