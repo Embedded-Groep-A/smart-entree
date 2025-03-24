@@ -14,7 +14,6 @@
 
 #define I2C_DEVICE "/dev/i2c-1"
 #define I2C_ADDR   0x20  
-#define I2C_SLAVE  0x69
 
 uint8_t rgbValues[3] = {255, 255, 255};
 
