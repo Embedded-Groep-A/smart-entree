@@ -19,7 +19,16 @@ uint8_t rgbValues[3] = {255, 255, 255};
 
 int main() {
     int file = open(I2C_DEVICE, O_RDWR);
-    ioctl(file, I2C_SLAVE, I2C_ADDR);
+    if (file < 0) {
+        perror("Failed to open I2C device");
+        return EXIT_FAILURE;
+    }
+
+    if (ioctl(file, I2C_SLAVE, I2C_ADDR) < 0) {
+        perror("Failed to set I2C address");
+        close(file);
+        return EXIT_FAILURE;
+    }
 
     while (1) {
         char buffer[6];
