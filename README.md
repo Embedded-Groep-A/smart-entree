@@ -15,3 +15,8 @@ Socket verbinding met RPi A
 RPi B SERVER  
 RPi A CLIENT
 
+Thijs Socket + RS485
+Cas Entree
+Ahmed Trappenhuis
+Oscar Lichtkrant
+Sigert Entree
