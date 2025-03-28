@@ -1,50 +1,68 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <fcntl.h>
+#include <wiringPi.h>
+#include <wiringSerial.h>
 #include <unistd.h>
-#include <sys/ioctl.h>
-#include <linux/i2c-dev.h>
+#include <string.h>
 
-#define I2C_BUS "/dev/i2c-1"  // I2C bus on Raspberry Pi (use "/dev/i2c-0" for older models)
-#define I2C_ADDR 0x08         // STM32 I2C slave address
+#define DE_PIN 18    // GPIO18 for DE (Driver Enable)
+#define RE_PIN 23    // GPIO23 for RE (Receiver Enable)
+#define UART_DEVICE "/dev/serial0"  // UART device on Raspberry Pi
+
+void enableTransmit() {
+    digitalWrite(DE_PIN, HIGH);
+    digitalWrite(RE_PIN, HIGH);
+}
+
+void enableReceive() {
+    digitalWrite(DE_PIN, LOW);
+    digitalWrite(RE_PIN, LOW);
+}
 
 int main() {
-    int fd;
-    char buffer[1];
+    int serial_port;
+    char buffer[100];
 
-    // Open I2C bus
-    if ((fd = open(I2C_BUS, O_RDWR)) < 0) {
-        perror("Failed to open the I2C bus");
+    // Initialize wiringPi
+    if (wiringPiSetupGpio() == -1) {
+        perror("WiringPi setup failed");
         return 1;
     }
 
-    // Specify the I2C slave device
-    if (ioctl(fd, I2C_SLAVE, I2C_ADDR) < 0) {
-        perror("Failed to set I2C address");
-        close(fd);
+    // Set up GPIO pins
+    pinMode(DE_PIN, OUTPUT);
+    pinMode(RE_PIN, OUTPUT);
+    enableReceive();
+
+    // Open serial port
+    if ((serial_port = serialOpen(UART_DEVICE, 9600)) < 0) {
+        perror("Unable to open serial device");
         return 1;
     }
 
-    // Send a command byte (e.g., request sensor data)
-    buffer[0] = 0x01;  // Example command
-    if (write(fd, buffer, 1) != 1) {
-        perror("Failed to write to I2C device");
-        close(fd);
-        return 1;
+    while (1) {
+        // Send data
+        enableTransmit();
+        serialPuts(serial_port, "Hello STM32!\n");
+        serialFlush(serial_port);
+        usleep(10000);  // Small delay
+        enableReceive();
+
+        // Read response
+        usleep(100000);  // Wait for response
+        if (serialDataAvail(serial_port)) {
+            int len = 0;
+            while (serialDataAvail(serial_port)) {
+                buffer[len++] = serialGetchar(serial_port);
+                if (len >= sizeof(buffer) - 1) break;
+            }
+            buffer[len] = '\0';
+            printf("Received from STM32: %s", buffer);
+        }
+        
+        sleep(1);
     }
-    printf("Sent command: 0x%02X\n", buffer[0]);
 
-    // Small delay to allow the STM32 to process the request
-    usleep(10000);
-
-    // Read response (1 byte)
-    if (read(fd, buffer, 1) != 1) {
-        perror("Failed to read from I2C device");
-        close(fd);
-        return 1;
-    }
-    printf("Received data: 0x%02X (%d)\n", buffer[0], buffer[0]);
-
-    close(fd);
+    serialClose(serial_port);
     return 0;
 }
