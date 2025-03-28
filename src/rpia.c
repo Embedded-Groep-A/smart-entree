@@ -7,7 +7,7 @@
 
 #define DE_PIN 18    // GPIO18 for DE (Driver Enable)
 #define RE_PIN 23    // GPIO23 for RE (Receiver Enable)
-#define UART_DEVICE "/dev/serial0"  // UART device on Raspberry Pi
+#define UART_DEVICE "/dev/ttyS0"  // UART device on Raspberry Pi
 
 void enableTransmit() {
     digitalWrite(DE_PIN, HIGH);
