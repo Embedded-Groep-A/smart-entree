@@ -1,43 +1,26 @@
+// STM32 Arduino Code (STM32_USART_Communication.ino)
+
 #include <Arduino.h>
 
-#define TX_PIN PA2
-#define RX_PIN PA3
-#define DE_PIN PA4
-#define RE_PIN PA5
-
-// Explicitly define Serial1 on PA2 (TX) and PA3 (RX)
-HardwareSerial Serial1(PA2, PA3);
-
-void enableTransmit() {
-    digitalWrite(DE_PIN, HIGH);
-    digitalWrite(RE_PIN, HIGH);
-}
-
-void enableReceive() {
-    digitalWrite(DE_PIN, LOW);
-    digitalWrite(RE_PIN, LOW);
-}
+#define USART_TX PA2
+#define USART_RX PA3
 
 void setup() {
-    Serial1.begin(9600);  // Initialize UART2 (PA2, PA3) for RS485
-    Serial.begin(9600);   // USB Serial for debugging
-    pinMode(DE_PIN, OUTPUT);
-    pinMode(RE_PIN, OUTPUT);
-    enableReceive();  // Start in receive mode
+    Serial.begin(115200);  // Initialize USART2
+    pinMode(USART_TX, OUTPUT);
+    pinMode(USART_RX, INPUT);
+    delay(1000);
+    Serial.println("STM32 Ready");
 }
 
 void loop() {
-    // Check for incoming data
-    if (Serial1.available() > 0) {
-        String received = Serial1.readString();
-        Serial.println("Received from RPi: " + received);
-
-        // Respond back
-        enableTransmit();
-        delay(1);
-        Serial1.println("Hello RPi!");
-        delay(1);
-        enableReceive();
+    if (Serial.available()) {
+        String received = Serial.readString();
+        Serial.print("Received: ");
+        Serial.println(received);
+        Serial.println("Reply from STM32");
+        delay(500);
     }
-    delay(100);
+    Serial.println("Hello from STM32!");
+    delay(1000);
 }

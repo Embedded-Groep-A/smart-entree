@@ -1,68 +1,45 @@
+// Raspberry Pi C Code (RPi_STM32_USART_Communication.c)
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <wiringPi.h>
-#include <wiringSerial.h>
-#include <unistd.h>
 #include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <termios.h>
 
-#define DE_PIN 18    // GPIO18 for DE (Driver Enable)
-#define RE_PIN 23    // GPIO23 for RE (Receiver Enable)
-#define UART_DEVICE "/dev/ttyS0"  // UART device on Raspberry Pi
-
-void enableTransmit() {
-    digitalWrite(DE_PIN, HIGH);
-    digitalWrite(RE_PIN, HIGH);
-}
-
-void enableReceive() {
-    digitalWrite(DE_PIN, LOW);
-    digitalWrite(RE_PIN, LOW);
-}
+#define UART_PATH "/dev/ttyS0"
 
 int main() {
-    int serial_port;
+    int uart_fd = open(UART_PATH, O_RDWR | O_NOCTTY);
+    if (uart_fd < 0) {
+        perror("Error opening UART");
+        return -1;
+    }
+
+    struct termios options;
+    tcgetattr(uart_fd, &options);
+    cfsetispeed(&options, B115200);
+    cfsetospeed(&options, B115200);
+    options.c_cflag = B115200 | CS8 | CLOCAL | CREAD;
+    options.c_iflag = IGNPAR;
+    options.c_oflag = 0;
+    options.c_lflag = 0;
+    tcflush(uart_fd, TCIFLUSH);
+    tcsetattr(uart_fd, TCSANOW, &options);
+
+    const char *message = "Hello from Raspberry Pi!";
+    write(uart_fd, message, strlen(message));
+
     char buffer[100];
-
-    // Initialize wiringPi
-    if (wiringPiSetupGpio() == -1) {
-        perror("WiringPi setup failed");
-        return 1;
+    int n = read(uart_fd, buffer, sizeof(buffer) - 1);
+    if (n > 0) {
+        buffer[n] = '\0';
+        printf("Received: %s\n", buffer);
     }
 
-    // Set up GPIO pins
-    pinMode(DE_PIN, OUTPUT);
-    pinMode(RE_PIN, OUTPUT);
-    enableReceive();
-
-    // Open serial port
-    if ((serial_port = serialOpen(UART_DEVICE, 9600)) < 0) {
-        perror("Unable to open serial device");
-        return 1;
-    }
-
-    while (1) {
-        // Send data
-        enableTransmit();
-        serialPuts(serial_port, "Hello STM32!\n");
-        serialFlush(serial_port);
-        usleep(10000);  // Small delay
-        enableReceive();
-
-        // Read response
-        usleep(100000);  // Wait for response
-        if (serialDataAvail(serial_port)) {
-            int len = 0;
-            while (serialDataAvail(serial_port)) {
-                buffer[len++] = serialGetchar(serial_port);
-                if (len >= sizeof(buffer) - 1) break;
-            }
-            buffer[len] = '\0';
-            printf("Received from STM32: %s", buffer);
-        }
-        
-        sleep(1);
-    }
-
-    serialClose(serial_port);
+    close(uart_fd);
     return 0;
 }
+
+// Compile with: gcc -o rpi_uart RPi_STM32_USART_Communication.c
+// Run with: sudo ./rpi_uart
