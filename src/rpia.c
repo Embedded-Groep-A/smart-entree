@@ -52,11 +52,13 @@ int main() {
                 printf("Received: %s\n", buffer);
             }
         }
-        if (strcmp(buffer, "BTN") == 0) {
+        if (strncmp(buffer, "BTN", 3) == 0) {
             sendToServer(client_fd, RGBLED, rgbValues, 3);
             rgbValues[0] = (rgbValues[0] + 1) % 256;
             rgbValues[1] = (rgbValues[1] + 1) % 256;
             rgbValues[2] = (rgbValues[2] + 1) % 256;
+        } else {
+            printf("Unknown command: %s\n", buffer);
         }
     }
 
