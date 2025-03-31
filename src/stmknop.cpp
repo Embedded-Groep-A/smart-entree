@@ -1,29 +1,33 @@
 #include <Arduino.h>
-#include <HardwareSerial.h>  // Ensure correct inclusion for STM32
+#include <HardwareSerial.h>
 
-#define USART_TX PIN_SERIAL2_TX
-#define USART_RX PIN_SERIAL2_RX
+HardwareSerial KappaSerial(USART1);
+
+#define BTN PA8
+
+int readButton() {
+    static bool lastState = HIGH;
+    bool currentState = digitalRead(BTN);
+
+    if (lastState == HIGH && currentState == LOW) {
+        lastState = currentState;
+        return 1; // Button pressed
+    }
+
+    lastState = currentState;
+    return 0; // No press
+}
 
 void setup() {
-    Serial.begin(115200);        // Initialize Serial Monitor
-    Serial.println("STM32 Ready");
+    Serial.begin(115200);
+    KappaSerial.begin(115200);
+    pinMode(BTN, INPUT_PULLUP);
 }
 
 void loop() {
-    // Check for data from Serial Monitor
-    if (Serial.available()) {
-        String received = Serial.readString();
-        Serial.print("Received on Serial: ");
-        Serial.println(received);
-
+    if (readButton()) {
+        Serial.println("Button pressed!");
+        KappaSerial.println("BTN");
     }
-
-    // Check for data from USART2
-    if (Serial.available()) {
-        String received = Serial.readString();
-        Serial.print("Received on USART2: ");
-        Serial.println(received);
-    }
-
-    delay(1000);
+    delay(50);
 }

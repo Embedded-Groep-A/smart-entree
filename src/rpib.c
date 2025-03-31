@@ -9,6 +9,7 @@
 #define PORT 8069
 #define MAX_CLIENTS 4
 
+
 int main() {
     int server_fd = hostSocket(PORT);
     initClientArray();
