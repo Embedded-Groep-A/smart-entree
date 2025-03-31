@@ -1,16 +1,12 @@
 #include <Arduino.h>
+#include <HardwareSerial.h>  // Ensure correct inclusion for STM32
 
-#define USART_TX PA2
-#define USART_RX PA3
-
-HardwareSerial Serial2(USART2);  // Define Serial2 for USART2
+#define USART_TX PIN_SERIAL2_TX
+#define USART_RX PIN_SERIAL2_RX
 
 void setup() {
     Serial.begin(115200);        // Initialize Serial Monitor
     Serial2.begin(9600);         // Initialize USART2
-    pinMode(USART_TX, OUTPUT);
-    pinMode(USART_RX, INPUT);
-    delay(1000);
     Serial.println("STM32 Ready");
     Serial2.println("USART2 Ready");
 }
