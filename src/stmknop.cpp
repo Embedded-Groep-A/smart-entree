@@ -25,7 +25,5 @@ void loop() {
         Serial.println(received);
     }
 
-    // Periodic message
-    Serial.println("Hello from STM32!");
     delay(1000);
 }

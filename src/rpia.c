@@ -3,6 +3,23 @@
 #include <string.h>
 #include <wiringSerial.h>
 
+
+char readLine(int fd, char *buffer, int size) {
+    int index = 0;
+    while (index < size - 1) {
+        if (serialDataAvail(fd)) {
+            char c = serialGetchar(fd);
+            if (c == '\n') {
+                break; // End of line
+            } else {
+                buffer[index++] = c; // Add character to buffer
+            }
+        }
+    }
+    buffer[index] = '\0'; // Null-terminate the string
+    return index; // Return the number of characters read
+}
+
 int main() {
     const char *serial_port = "/dev/ttyS0"; // Replace with your serial port
     int baud_rate = 115200; // Set baud rate
@@ -22,14 +39,10 @@ int main() {
     while (1) {
         // Check if data is available to read
         if (serialDataAvail(fd)) {
-            char c = serialGetchar(fd); // Read a character
-            if (c == '\n') { // End of line
-                buffer[index] = '\0'; // Null-terminate the string
-                printf("Received line: %s\n", buffer);
-                fflush(stdout); // Ensure output is printed immediately
-                index = 0; // Reset buffer index for the next line
-            } else if (index < sizeof(buffer) - 1) {
-                buffer[index++] = c; // Add character to buffer
+            // Read a line from the serial port
+            index = readLine(fd, buffer, sizeof(buffer));
+            if (index > 0) {
+                printf("Received: %s\n", buffer); // Print the received line
             }
         }
     }
