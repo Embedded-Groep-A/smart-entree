@@ -5,7 +5,7 @@
 
 int main() {
     const char *serial_port = "/dev/ttyS0"; // Replace with your serial port
-    int baud_rate = 9600; // Set baud rate
+    int baud_rate = 115200; // Set baud rate
 
     // Open the serial port
     int fd = serialOpen(serial_port, baud_rate);
