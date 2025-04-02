@@ -7,7 +7,7 @@
 #include "pisocket.h"
 
 #define PORT 8069
-#define HOST "bramsvoorhoofd.local"
+#define HOST "rpibentree.local"
 
 uint8_t rgbValues[3] = {0, 85, 170};
 
