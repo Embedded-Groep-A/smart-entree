@@ -23,7 +23,7 @@ const char* piHost = "192.168.1.100";
 WiFiClient client;
 
 // Define the physical button pin.
-#define BUTTON_PIN PA8
+#define BUTTON_PIN D2
 
 // Function to read the button state. Returns 1 when a press is detected.
 int readButton() {
