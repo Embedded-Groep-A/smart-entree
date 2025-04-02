@@ -13,18 +13,16 @@
 #include "wmsocket.h"
 
 // WiFi network credentials
-const char *ssid = "707";
-const char *password = "DEFCAB1960";
-const char *hostname = "bramsvoorhoofd.local";
-
-// Raspberry pi ip
-const char* piHost = "192.168.1.100";
+const char *ssid = "NSELab";
+const char *password = "NSELabWiFI";
+const char *hostname = "rpibentree.local";
 
 WiFiClient client;
 
 // Define the physical button pin.
 #define BUTTON_PIN D2
 
+uint8_t rgbValues[3] = {0, 85, 170};
 // Function to read the button state. Returns 1 when a press is detected.
 int readButton() {
   static int lastState = HIGH;
@@ -45,7 +43,7 @@ void setup() {
   setupWiFiconnection(ssid, password);
 
   // Connect to the Raspberry Pi server using the socket functions from wmsocket.h
-  client = connectSocket(piHost, port);
+  client = connectSocket(hostname, port);
 }
 
 void loop() {
@@ -57,10 +55,16 @@ void loop() {
   // Check for an incoming command from the Pi (non-blocking)
   int result = listenForData(client, &receivedType, buffer, &dataSize);
   if (result > 0) {
-    // If a BUTTON command is received, read the button state and send it back
+    // If a BUTTON command is received, read the button state and send it back.
+    // If a BUTTON cmd is received, read the state and send rgb value.
     if (receivedType == BUTTON) {
       int buttonState = readButton();
-      sendToServer(client, BUTTON, &buttonState, sizeof(buttonState));
+      //sendToServer(client, BUTTON, &buttonState, sizeof(buttonState));
+      sendToServer(client_fd, RGBLED, rgbValues, 3);
+      rgbValues[0] = (rgbValues[0] + 10) % 256;
+      rgbValues[1] = (rgbValues[1] + 10) % 256;
+      rgbValues[2] = (rgbValues[2] + 10) % 256;
+      
       Serial.print("Received BUTTON command, responded with state: ");
       Serial.println(buttonState);
     }
