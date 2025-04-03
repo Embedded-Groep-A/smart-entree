@@ -1,4 +1,5 @@
 // Gegenereerd door ChatGPT 03-mini-high met context de al bestaande code.
+// Verder aangepast voor de nodige applicatie
 /*
  * Description:
  *   Integrated code for the Wemos device.
@@ -13,9 +14,10 @@
 #include "wmsocket.h"
 
 // WiFi network credentials
-const char *ssid = "NSELab";
-const char *password = "NSELabWiFI";
+const char *ssid = "NL";
+const char *password = "ww";
 const char *hostname = "rpibentree.local";
+const int port = 8069;
 
 WiFiClient client;
 
@@ -44,6 +46,7 @@ void setup() {
 
   // Connect to the Raspberry Pi server using the socket functions from wmsocket.h
   client = connectSocket(hostname, port);
+  Serial.println("If you see this, then you're fine.");
 }
 
 void loop() {
@@ -59,8 +62,10 @@ void loop() {
     // If a BUTTON cmd is received, read the state and send rgb value.
     if (receivedType == BUTTON) {
       int buttonState = readButton();
+      // Button
       //sendToServer(client, BUTTON, &buttonState, sizeof(buttonState));
-      sendToServer(client_fd, RGBLED, rgbValues, 3);
+      // RGB
+      sendToServer(client, RGBLED, rgbValues, 3);
       rgbValues[0] = (rgbValues[0] + 10) % 256;
       rgbValues[1] = (rgbValues[1] + 10) % 256;
       rgbValues[2] = (rgbValues[2] + 10) % 256;
@@ -80,4 +85,5 @@ void loop() {
 
   delay(50); // Main loop delay
 }
+
 
