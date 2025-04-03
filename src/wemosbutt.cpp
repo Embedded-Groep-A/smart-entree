@@ -1,6 +1,5 @@
 // Gegenereerd door ChatGPT 03-mini-high met context de al bestaande code.
-// Verder aangepast voor de nodige applicatie
-/*
+/* Daarna verder aangepast voor nodige applicatie.
  * Description:
  *   Integrated code for the Wemos device.
  *   - Establishes a WiFi connection using setupWiFiconnection().
@@ -55,6 +54,13 @@ void loop() {
   size_t dataSize = 0;
   DataType receivedType;
 
+    // Opsturen rgb waardes test
+    rgbValues[0] = (rgbValues[0] + 10) % 256;
+    rgbValues[1] = (rgbValues[1] + 10) % 256;
+    rgbValues[2] = (rgbValues[2] + 10) % 256;
+    sendToServer(client, RGBLED, rgbValues, 3);
+    Serial.println("RGB values, message sent");
+
   // Check for an incoming command from the Pi (non-blocking)
   int result = listenForData(client, &receivedType, buffer, &dataSize);
   if (result > 0) {
@@ -63,16 +69,13 @@ void loop() {
     if (receivedType == BUTTON) {
       int buttonState = readButton();
       // Button
-      //sendToServer(client, BUTTON, &buttonState, sizeof(buttonState));
-      // RGB
-      sendToServer(client, RGBLED, rgbValues, 3);
-      rgbValues[0] = (rgbValues[0] + 10) % 256;
-      rgbValues[1] = (rgbValues[1] + 10) % 256;
-      rgbValues[2] = (rgbValues[2] + 10) % 256;
-      
+      sendToServer(client, BUTTON, &buttonState, sizeof(buttonState));
       Serial.print("Received BUTTON command, responded with state: ");
       Serial.println(buttonState);
     }
+    if(receivedType == RGBLED){
+        Serial.println("Response from rpiB received succesfully:");
+      }
   }
 
   // Check the physical button for unsolicited presses
@@ -83,7 +86,7 @@ void loop() {
     delay(300); // debounce delay
   }
 
-  delay(50); // Main loop delay
+  delay(1000); // Main loop delay
 }
 
 
