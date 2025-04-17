@@ -1,10 +1,15 @@
-#ifndef RC522_H
-#define RC522_H
+#ifndef NFCREADER_H
+#define NFCREADER_H
 
-#include "stm32f1xx_hal.h"
+#include <MFRC522.h>
 
-void rc522_init(void);
-uint8_t rc522_is_card_present(void);
-uint8_t rc522_read_uid(uint8_t *uid_out);
+// Bekende UIDs
+extern byte knownUIDs[3][4];
+
+// Namen per UID
+extern const char* eigenaarNamen[3];
+
+// Functie die UID controleert en index teruggeeft
+int checkUID(byte *uid);
 
 #endif
