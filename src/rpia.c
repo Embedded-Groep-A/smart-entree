@@ -1,50 +1,67 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <fcntl.h>
+#include <string.h>
+#include <wiringSerial.h>
+#include <stdint.h>
 #include <unistd.h>
-#include <sys/ioctl.h>
-#include <linux/i2c-dev.h>
+#include "pisocket.h"
 
-#define I2C_BUS "/dev/i2c-1"  // I2C bus on Raspberry Pi (use "/dev/i2c-0" for older models)
-#define I2C_ADDR 0x08         // STM32 I2C slave address
+#define PORT 8069
+#define HOST "rpibentree.local"
+
+uint8_t rgbValues[3] = {0, 85, 170};
+
+
+char readLine(int fd, char *buffer, int size) {
+    int index = 0;
+    while (index < size - 1) {
+        if (serialDataAvail(fd)) {
+            char c = serialGetchar(fd);
+            if (c == '\n') {
+                break; // End of line
+            } else {
+                buffer[index++] = c; // Add character to buffer
+            }
+        }
+    }
+    buffer[index] = '\0'; // Null-terminate the string
+    return index; // Return the number of characters read
+}
 
 int main() {
-    int fd;
-    char buffer[1];
+    int client_fd = connectSocket(HOST, PORT);
 
-    // Open I2C bus
-    if ((fd = open(I2C_BUS, O_RDWR)) < 0) {
-        perror("Failed to open the I2C bus");
+    const char *serial_port = "/dev/ttyS0";
+    int baud_rate = 115200;
+
+    int fd = serialOpen(serial_port, baud_rate);
+    if (fd == -1) {
+        perror("Unable to open serial port");
         return 1;
     }
 
-    // Specify the I2C slave device
-    if (ioctl(fd, I2C_SLAVE, I2C_ADDR) < 0) {
-        perror("Failed to set I2C address");
-        close(fd);
-        return 1;
+    printf("Serial port opened successfully.\n");
+
+    char buffer[256];
+    int index = 0;
+
+    while (1) {
+        if (serialDataAvail(fd)) {
+            index = readLine(fd, buffer, sizeof(buffer));
+            if (index > 0) {
+                printf("Received: %s\n", buffer);
+                if (strncmp(buffer, "BTN", 3) == 0) {
+                    sendToServer(client_fd, RGBLED, rgbValues, 3);
+                    rgbValues[0] = (rgbValues[0] + 10) % 256;
+                    rgbValues[1] = (rgbValues[1] + 10) % 256;
+                    rgbValues[2] = (rgbValues[2] + 10) % 256;
+                }
+            }
+
+        }
+
     }
 
-    // Send a command byte (e.g., request sensor data)
-    buffer[0] = 0x01;  // Example command
-    if (write(fd, buffer, 1) != 1) {
-        perror("Failed to write to I2C device");
-        close(fd);
-        return 1;
-    }
-    printf("Sent command: 0x%02X\n", buffer[0]);
-
-    // Small delay to allow the STM32 to process the request
-    usleep(10000);
-
-    // Read response (1 byte)
-    if (read(fd, buffer, 1) != 1) {
-        perror("Failed to read from I2C device");
-        close(fd);
-        return 1;
-    }
-    printf("Received data: 0x%02X (%d)\n", buffer[0], buffer[0]);
-
-    close(fd);
+    serialClose(fd);
     return 0;
 }
