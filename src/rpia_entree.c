@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdint.h>
 #include <unistd.h>
+#include <wiringSerial.h>
+
 
 const char *serial_port = "/dev/ttyS0";
 int baud_rate = 115200;
@@ -59,7 +61,7 @@ int main() {
             index = readLine(fd, buffer, sizeof(buffer));
             if (index > 0) {
                 printf("Received: %s\n", buffer);
-                if (strncmp(buffer, "uid:", 4) == 0) {
+                if (strncmp(buffer, "UID:", 4) == 0) {
                     uint8_t uid[4];
                     sscanf(buffer + 4, "%hhx%hhx%hhx%hhx", &uid[0], &uid[1], &uid[2], &uid[3]);
                     int eigenaarIndex = checkUID(uid);
