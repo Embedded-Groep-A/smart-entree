@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdint.h>
 #include <unistd.h>
+#include <wiringSerial.h>
+
 
 const char *serial_port = "/dev/ttyS0";
 int baud_rate = 115200;
