@@ -1,74 +1,81 @@
 #include <SPI.h>
 #include <MFRC522.h>
+#include <Servo.h>
 
+// RFID
 #define RST_PIN 9
 #define SS_PIN 10
-
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 
-// Voeg hier je bekende kaarten toe (4 bytes per kaart)
-byte knownUIDs[3][4] = {
-  {0x64, 0x81, 0xE6, 0x03},  // Kaart 1
-  {0xB1, 0xFF, 0x74, 0x1D},  // Kaart 2
-  // {0x11, 0x22, 0x33, 0x44}   // Kaart 3
-};
-const char* eigenaarNamen[3] = {
-  "Cas",
-  "Thijs",
-  // "Ahmed"
-};
-int checkUID(byte *uid) {
-  for (int i = 0; i < 3; i++) {  // Aantal bekende kaarten
-    bool match = true;
-    for (int j = 0; j < 4; j++) {
-      if (uid[j] != knownUIDs[i][j]) {
-        match = false;
-        break;
-      }
+// Deurbel knop
+#define DEURBEL_PIN 3
+
+// Servo
+Servo deurServo;
+#define SERVO_PIN 5
+
+String wachtOpAntwoord(unsigned long timeout_ms = 5000) {
+  unsigned long starttijd = millis();
+  String antwoord = "";
+
+  while (millis() - starttijd < timeout_ms) {
+    if (Serial.available()) { // Let op: Serial is nu pin 0/1
+      antwoord = Serial.readStringUntil('\n');
+      antwoord.trim();
+      break;
     }
-    if (match) return i;  // Index van match
   }
-  return -1;  // Geen match
+  return antwoord;
 }
 
+void openDeur() {
+  deurServo.write(90);  // Deur openen
+  delay(3000);          // 3 seconden open
+  deurServo.write(0);   // Deur sluiten
+}
 
 void setup() {
-  Serial.begin(115200);
+  pinMode(DEURBEL_PIN, INPUT_PULLUP);
+
+  deurServo.attach(SERVO_PIN);
+  deurServo.write(0); // Deur begint gesloten
+
+  Serial.begin(115200); 
   SPI.begin();
   mfrc522.PCD_Init();
-  Serial.println("Systeem opgestart...");
-  Serial.println("Scan een RFID-kaart...");
 }
 
 void loop() {
-  // Wacht op een kaart
-  if (!mfrc522.PICC_IsNewCardPresent() || !mfrc522.PICC_ReadCardSerial()) {
-    return;
+  // 1. RFID-kaart scannen
+  if (mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial()) {
+    String uidString = "UID:";
+    for (byte i = 0; i < mfrc522.uid.size; i++) {
+      if (mfrc522.uid.uidByte[i] < 0x10) uidString += "0";
+      uidString += String(mfrc522.uid.uidByte[i], HEX);
+    }
+
+    Serial.println(uidString);  // Stuur UID naar de Pi via RS485
+
+    String antwoord = wachtOpAntwoord();
+    if (antwoord == "ACCEPT") {
+      openDeur();
+    }
+    // Bij REJECT of geen antwoord: niks doen
+
+    mfrc522.PICC_HaltA();
+    mfrc522.PCD_StopCrypto1();
+    delay(1000);
   }
 
-  // Print UID
-  Serial.print("UID tag: ");
-  for (byte i = 0; i < mfrc522.uid.size; i++) {
-    Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
-    Serial.print(mfrc522.uid.uidByte[i], HEX);
+  // 2. Deurbelknop
+  if (digitalRead(DEURBEL_PIN) == LOW) {
+    Serial.println("BEL:IN");  // Stuur naar Pi
+
+    String antwoord = wachtOpAntwoord();
+    if (antwoord == "OPEN") {
+      openDeur();
+    }
+
+    delay(500); // debounce
   }
-  Serial.println();
-
-  // Controleer of UID voorkomt in de lijst
- int uidIndex = checkUID(mfrc522.uid.uidByte);
-if (uidIndex >= 0) {
-  Serial.print("✅ Welkom ");
-  Serial.print(eigenaarNamen[uidIndex]);
-  Serial.println("!");
-} else {
-  Serial.println("⛔ Onbekende kaart. Toegang geweigerd.");
 }
-
-  // Reset kaartlezing en wacht op volgende
-  mfrc522.PICC_HaltA();
-  mfrc522.PCD_StopCrypto1();
-  delay(1500);
-
-  Serial.println("Scan een nieuwe RFID-kaart...");
-}
-
