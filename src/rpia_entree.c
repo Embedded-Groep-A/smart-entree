@@ -60,6 +60,7 @@ int main() {
 
     while (1) {
         serialPuts(fd, "HALLO\n");
+        printf("HALLO\n");
         serialFlush(fd);
         if (serialDataAvail(fd)) {
             index = readLine(fd, buffer, sizeof(buffer));
