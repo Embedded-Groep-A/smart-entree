@@ -33,6 +33,7 @@ typedef struct {
 Eigenaar eigenaars[] = {
     {{0x77, 0xDA, 0xAC, 0x02}, "Cas"},
     {{0xB1, 0xFF, 0x74, 0x1D}, "Thijs"},
+    {{0x64, 0x81, 0xE6, 0x03}, "Ahmed"}
 };
 
 int checkUID(uint8_t *uid) {
@@ -69,9 +70,11 @@ int main() {
                     if (eigenaarIndex != -1) {
                         printf("Eigenaar: %s\n", eigenaars[eigenaarIndex].eigenaarNaam);
                         serialPuts(fd, "OPEN\n");
+                        serialFlush(fd);
                     } else {
                         printf("Onbekende UID\n");
                         serialPuts(fd, "WEIGER\n");
+                        serialFlush(fd);
                     }
                 }
                 
