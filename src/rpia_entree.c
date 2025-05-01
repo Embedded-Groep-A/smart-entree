@@ -51,6 +51,7 @@ int checkUID(uint8_t *uid) {
 
 
 int main() {
+    printf("kappa start\n");
     int fd = serialOpen(serial_port, baud_rate);
 
     char buffer[256];
