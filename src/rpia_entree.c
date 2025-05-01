@@ -69,16 +69,10 @@ int main() {
                     int eigenaarIndex = checkUID(uid);
                     if (eigenaarIndex != -1) {
                         printf("Eigenaar: %s\n", eigenaars[eigenaarIndex].eigenaarNaam);
-                        serialPuts(fd, "OPEN\n");
-                        serialFlush(fd);
-                        printf("Verzonden naar Arduino: OPEN\n");
-                        fflush(stdout);
+                        write(fd, "OPEN\n", 5);
                     } else {
                         printf("Onbekende UID\n");
-                        serialPuts(fd, "WEIGER\n");
-                        serialFlush(fd);
-                        printf("Verzonden naar Arduino: WEIGER\n");
-                        fflush(stdout);
+                        write(fd, "WEIGER\n", 7);
                     }
                 }
                 
