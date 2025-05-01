@@ -52,7 +52,7 @@ int checkUID(uint8_t *uid) {
 
 
 int main() {
-    printf("kappa start\n");
+    printf("BLIEP BLOEP MAINFRAME BUS ONLINE RPIA\n");
     int fd = serialOpen(serial_port, baud_rate);
 
     char buffer[256];
@@ -69,10 +69,12 @@ int main() {
                     int eigenaarIndex = checkUID(uid);
                     if (eigenaarIndex != -1) {
                         printf("Eigenaar: %s\n", eigenaars[eigenaarIndex].eigenaarNaam);
-                        write(fd, "OPEN\n", 5);
+                        serialPuts(fd, "OPEN\n");
+                        serialFlush(fd);
                     } else {
                         printf("Onbekende UID\n");
-                        write(fd, "WEIGER\n", 7);
+                        serialPuts(fd, "WEIGER\n");
+                        serialFlush(fd);
                     }
                 }
                 
