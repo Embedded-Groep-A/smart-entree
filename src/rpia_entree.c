@@ -67,8 +67,10 @@ int main() {
                     int eigenaarIndex = checkUID(uid);
                     if (eigenaarIndex != -1) {
                         printf("Eigenaar: %s\n", eigenaars[eigenaarIndex].eigenaarNaam);
+                        fprintf(fd, "OPEN\n");
                     } else {
                         printf("Onbekende UID\n");
+                        fprintf(fd, "WEIGER\n");
                     }
                 }
                 
