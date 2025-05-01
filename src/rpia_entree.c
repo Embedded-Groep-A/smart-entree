@@ -60,9 +60,10 @@ int main() {
 
     while (1) {
         serialPuts(fd, "HALLO\n");
+        serialFlush(fd);
+
         printf("HALLO\n");
         delay(1000);
-        serialFlush(fd);
         if (serialDataAvail(fd)) {
             index = readLine(fd, buffer, sizeof(buffer));
             if (index > 0) {
