@@ -71,10 +71,14 @@ int main() {
                         printf("Eigenaar: %s\n", eigenaars[eigenaarIndex].eigenaarNaam);
                         serialPuts(fd, "OPEN\n");
                         serialFlush(fd);
+                        printf("Verzonden naar Arduino: OPEN\n");
+                        fflush(stdout);
                     } else {
                         printf("Onbekende UID\n");
                         serialPuts(fd, "WEIGER\n");
                         serialFlush(fd);
+                        printf("Verzonden naar Arduino: WEIGER\n");
+                        fflush(stdout);
                     }
                 }
                 
