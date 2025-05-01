@@ -71,10 +71,12 @@ int main() {
                         printf("Eigenaar: %s\n", eigenaars[eigenaarIndex].eigenaarNaam);
                         serialPuts(fd, "OPEN\n");
                         serialFlush(fd);
+                        delay(10);
                     } else {
                         printf("Onbekende UID\n");
                         serialPuts(fd, "WEIGER\n");
                         serialFlush(fd);
+                        delay(10);
                     }
                 }
                 
