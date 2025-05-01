@@ -59,9 +59,6 @@ int main() {
     int index = 0;
 
     while (1) {
-        serialPuts(fd, "HALLO\n");
-        printf("HALLO\n");
-        serialFlush(fd);
         if (serialDataAvail(fd)) {
             index = readLine(fd, buffer, sizeof(buffer));
             if (index > 0) {
