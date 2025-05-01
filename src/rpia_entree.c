@@ -61,7 +61,6 @@ int main() {
         if (serialDataAvail(fd)) {
             index = readLine(fd, buffer, sizeof(buffer));
             if (index > 0) {
-                printf("Received: %s\n", buffer);
                 if (strncmp(buffer, "UID:", 4) == 0) {
                     uint8_t uid[4];
                     sscanf(buffer + 4, "%hhx %hhx %hhx %hhx", &uid[0], &uid[1], &uid[2], &uid[3]);
@@ -69,10 +68,10 @@ int main() {
                     int eigenaarIndex = checkUID(uid);
                     if (eigenaarIndex != -1) {
                         printf("Eigenaar: %s\n", eigenaars[eigenaarIndex].eigenaarNaam);
-                        fprintf(fd, "OPEN\n");
+                        serialPuts(fd, "OPEN\n");
                     } else {
                         printf("Onbekende UID\n");
-                        fprintf(fd, "WEIGER\n");
+                        serialPuts(fd, "WEIGER\n");
                     }
                 }
                 
