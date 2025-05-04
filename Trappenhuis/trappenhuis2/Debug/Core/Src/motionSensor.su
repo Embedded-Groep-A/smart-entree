@@ -1,0 +1,2 @@
+../Core/Src/motionSensor.c:7:6:motion_sensor_init	32	static
+../Core/Src/motionSensor.c:17:9:motionSensor_detect	16	static
