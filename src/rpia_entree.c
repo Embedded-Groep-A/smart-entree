@@ -59,29 +59,32 @@ int main() {
     int index = 0;
 
     while (1) {
+        serialWrite(fd, "OPEN\n", 5);
+        serialFlush(fd);
+        usleep(1000000); // 1 second delay
 
-        if (serialDataAvail(fd)) {
-            index = readLine(fd, buffer, sizeof(buffer));
-            if (index > 0) {
-                if (strncmp(buffer, "UID:", 4) == 0) {
-                    uint8_t uid[4];
-                    sscanf(buffer + 4, "%hhx %hhx %hhx %hhx", &uid[0], &uid[1], &uid[2], &uid[3]);
-                    printf("UID: %02X %02X %02X %02X\n", uid[0], uid[1], uid[2], uid[3]);
-                    int eigenaarIndex = checkUID(uid);
-                    if (eigenaarIndex != -1) {
-                        printf("Eigenaar: %s\n", eigenaars[eigenaarIndex].eigenaarNaam);
-                        serialPuts(fd, "OPEN\n");
-                        serialFlush(fd);
-                    } else {
-                        printf("Onbekende UID\n");
-                        serialPuts(fd, "WEIGER\n");
-                        serialFlush(fd);
-                    }
-                }
+        // if (serialDataAvail(fd)) {
+        //     index = readLine(fd, buffer, sizeof(buffer));
+        //     if (index > 0) {
+        //         if (strncmp(buffer, "UID:", 4) == 0) {
+        //             uint8_t uid[4];
+        //             sscanf(buffer + 4, "%hhx %hhx %hhx %hhx", &uid[0], &uid[1], &uid[2], &uid[3]);
+        //             printf("UID: %02X %02X %02X %02X\n", uid[0], uid[1], uid[2], uid[3]);
+        //             int eigenaarIndex = checkUID(uid);
+        //             if (eigenaarIndex != -1) {
+        //                 printf("Eigenaar: %s\n", eigenaars[eigenaarIndex].eigenaarNaam);
+        //                 serialPuts(fd, "OPEN\n");
+        //                 serialFlush(fd);
+        //             } else {
+        //                 printf("Onbekende UID\n");
+        //                 serialPuts(fd, "WEIGER\n");
+        //                 serialFlush(fd);
+        //             }
+        //         }
                 
-            }
+        //     }
 
-        }
+        // }
 
     }
 
