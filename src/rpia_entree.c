@@ -33,7 +33,7 @@ typedef struct {
 Eigenaar eigenaars[] = {
     {{0x77, 0xDA, 0xAC, 0x02}, "Cas"},
     {{0xB1, 0xFF, 0x74, 0x1D}, "Thijs"},
-    {{0x64, 0x81, 0xE6, 0x03}, "Ahmed"}
+   // {{0x64, 0x81, 0xE6, 0x03}, "Ahmed"}
 };
 
 int checkUID(uint8_t *uid) {
@@ -75,8 +75,7 @@ int main() {
                         usleep(10000);
                     } else {
                         printf("Onbekende UID\n");
-                        serialPuts(fd, "WEIGER\n");
-                        serialFlush(fd);
+                        write(fd, "DENY\n", strlen("DENY\n"));
                     }
                 }
                 
