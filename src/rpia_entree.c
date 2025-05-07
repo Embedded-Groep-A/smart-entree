@@ -61,7 +61,7 @@ int main() {
     while (1) {
         serialPuts(fd, "OPEN\n");
         serialFlush(fd);
-        usleep(1000000); // 1 second delay
+        usleep(10000); // 1 second delay
 
         // if (serialDataAvail(fd)) {
         //     index = readLine(fd, buffer, sizeof(buffer));
