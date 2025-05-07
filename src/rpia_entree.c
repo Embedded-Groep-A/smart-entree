@@ -59,10 +59,9 @@ int main() {
     int index = 0;
 
     while (1) {
-        printf("Waiting for data...\n");
         if (serialDataAvail(fd)) {
             index = readLine(fd, buffer, sizeof(buffer));
-            printf("Received: %s\n", buffer);
+            printf("RAW DATA: %s\n", buffer);
             if (index > 0) {
                 if (strncmp(buffer, "UID:", 4) == 0) {
                     uint8_t uid[4];
@@ -72,6 +71,7 @@ int main() {
                     if (eigenaarIndex != -1) {
                         printf("Eigenaar: %s\n", eigenaars[eigenaarIndex].eigenaarNaam);
                         write(fd, "OPEN\n", strlen("OPEN\n"));
+                        
                         usleep(10000);
                     } else {
                         printf("Onbekende UID\n");
