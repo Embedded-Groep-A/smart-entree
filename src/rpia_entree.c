@@ -59,6 +59,7 @@ int main() {
     int index = 0;
 
     while (1) {
+        printf("Waiting for data...\n");
         if (serialDataAvail(fd)) {
             index = readLine(fd, buffer, sizeof(buffer));
             printf("Received: %s\n", buffer);
