@@ -59,10 +59,6 @@ int main() {
     int index = 0;
 
     while (1) {
-        // serialPuts(fd, "TEST\n");
-        // serialFlush(fd);
-        // delay(500);  // Wait for 1 second
-
         if (serialDataAvail(fd)) {
             index = readLine(fd, buffer, sizeof(buffer));
             if (index > 0) {
