@@ -7,7 +7,7 @@
 
 
 const char *serial_port = "/dev/ttyS0";
-int baud_rate = 115200;
+int baud_rate = 9600;
 
 char readLine(int fd, char *buffer, int size) {
     int index = 0;
@@ -59,9 +59,9 @@ int main() {
     int index = 0;
 
     while (1) {
-        serialPrintf(fd, "START\n");
+        serialPuts(fd, "TEST\n");
         serialFlush(fd);
-        usleep(1000000); // 1 second delay
+        delay(500);  // Wait for 1 second
 
         // if (serialDataAvail(fd)) {
         //     index = readLine(fd, buffer, sizeof(buffer));
