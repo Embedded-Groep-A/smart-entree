@@ -70,7 +70,6 @@ int main() {
                     if (eigenaarIndex != -1) {
                         printf("Eigenaar: %s\n", eigenaars[eigenaarIndex].eigenaarNaam);
                         write(fd, "OPEN\n", strlen("OPEN\n"));
-                        tcdrain(fd);
                         usleep(10000);
                     } else {
                         printf("Onbekende UID\n");
