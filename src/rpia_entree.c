@@ -59,7 +59,7 @@ int main() {
     int index = 0;
 
     while (1) {
-        serialprintf(fd, "START\n");
+        serialPrintf(fd, "START\n");
         serialFlush(fd);
         usleep(1000000); // 1 second delay
 
