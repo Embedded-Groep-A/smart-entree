@@ -61,6 +61,7 @@ int main() {
     while (1) {
         if (serialDataAvail(fd)) {
             index = readLine(fd, buffer, sizeof(buffer));
+            printf("Received: %s\n", buffer);
             if (index > 0) {
                 if (strncmp(buffer, "UID:", 4) == 0) {
                     uint8_t uid[4];
