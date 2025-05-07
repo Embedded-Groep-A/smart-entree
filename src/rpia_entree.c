@@ -69,9 +69,9 @@ int main() {
                     int eigenaarIndex = checkUID(uid);
                     if (eigenaarIndex != -1) {
                         printf("Eigenaar: %s\n", eigenaars[eigenaarIndex].eigenaarNaam);
-                        serialPuts(fd, "OPEN\n");
-                        serialClose(fd);
-                        fd = serialOpen(serial_port, baud_rate);
+                        write(fd, "OPEN\n", strlen("OPEN\n"));
+                        tcdrain(fd);
+                        usleep(10000);
                     } else {
                         printf("Onbekende UID\n");
                         serialPuts(fd, "WEIGER\n");
