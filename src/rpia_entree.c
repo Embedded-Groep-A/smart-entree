@@ -70,7 +70,8 @@ int main() {
                     if (eigenaarIndex != -1) {
                         printf("Eigenaar: %s\n", eigenaars[eigenaarIndex].eigenaarNaam);
                         serialPuts(fd, "OPEN\n");
-                        serialFlush(fd);
+                        serialClose(fd);
+                        fd = serialOpen(serial_port, baud_rate);
                     } else {
                         printf("Onbekende UID\n");
                         serialPuts(fd, "WEIGER\n");
