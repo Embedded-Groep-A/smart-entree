@@ -63,6 +63,7 @@ int main() {
             char message[16];
             sprintf(message, "%d\r", i);
             write(fd, message, strlen(message));
+            printf("Sending: %s", message);
             usleep(100000);
         }
         // if (serialDataAvail(fd)) {
