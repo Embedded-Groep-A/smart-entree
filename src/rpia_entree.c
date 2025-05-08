@@ -59,13 +59,8 @@ int main() {
     int index = 0;
 
     while (1) {
-        for (int i = 0; i < 1000; i++) {
-            char message[16];
-            sprintf(message, "%d\r", i);
-            write(fd, message, strlen(message));
-            printf("%d", i);
-            usleep(100000);
-        }
+        write(fd, "6969\r", strlen("6969\r"));
+        usleep(1000000); // 1 second delay
         // if (serialDataAvail(fd)) {
         //     index = readLine(fd, buffer, sizeof(buffer));
         //     printf("RAW DATA: %s\n", buffer);
