@@ -60,7 +60,9 @@ int main() {
 
     while (1) {
         for (int i = 0; i < 1000; i++) {
-            write(fd, (char *)i"\r", 1);
+            char message[16];
+            sprintf(message, "%d\r", i);
+            write(fd, message, strlen(message));
             usleep(100000);
         }
         // if (serialDataAvail(fd)) {
