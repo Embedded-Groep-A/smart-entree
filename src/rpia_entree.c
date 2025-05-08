@@ -59,7 +59,7 @@ int main() {
     int index = 0;
 
     while (1) {
-        write(fd, "6969\r", strlen("6969\r"));
+        write(fd, "TEST\r", strlen("TEST\r"));
         usleep(1000000); // 1 second delay
         // if (serialDataAvail(fd)) {
         //     index = readLine(fd, buffer, sizeof(buffer));
